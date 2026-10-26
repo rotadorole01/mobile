@@ -1,11 +1,10 @@
-import { Text, View } from "react-native";
+import { Redirect } from "expo-router";
 
-function Home() {
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>home da dahsborad, na area autenticada</Text>
-    </View>
-  );
+// =====================================================
+// PÁGINA INICIAL - ROTA DO ROLÊ
+// =====================================================
+
+export default function Home() {
+  // Redireciona automaticamente para a Dashboard
+  return <Redirect href="/dashboard" />;
 }
-
-export default Home;
