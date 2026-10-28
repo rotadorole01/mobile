@@ -1,0 +1,54 @@
+
+{
+  "tables": {
+    "users": {
+      "columns": {
+        "id": { "type": "int", "primaryKey": true, "autoIncrement": true },
+        "name": { "type": "string", "size": 100, "nullable": false },
+        "login": { "type": "string", "size": 150, "nullable": false },
+        "password": { "type": "string", "size": 254, "nullable": false },
+        "created_at": { "type": "datetime", "nullable": false, "default": true },
+        "actived": { "type": "boolean", "nullable": false, "default": true }
+      }
+    },
+    "roles": {
+      "columns": {
+        "id": { "type": "int", "primaryKey": true, "autoIncrement": true },
+        "role": { "type": "string", "size": 100, "nullable": false },
+        "created_at": { "type": "datetime", "nullable": false, "default": true }
+      }
+    },
+    "usersroles": {
+      "columns": {
+        "id": { "type": "int", "primaryKey": true, "autoIncrement": true },
+        "idroler": { "type": "int", "nullable": false },
+        "iduser": { "type": "int", "nullable": false },
+        "created_at": { "type": "datetime", "nullable": false, "default": true }
+      }
+    },
+    "eventos": {
+      "columns": {
+        "id": { "type": "int", "primaryKey": true, "autoIncrement": true },
+        "titulo": { "type": "string", "size": 200, "nullable": false },
+        "categoria": { "type": "string", "size": 100, "nullable": false },
+        "descricao": { "type": "string", "nullable": false },
+        "data_evento": { "type": "string", "size": 10, "nullable": false },
+        "horario": { "type": "string", "size": 5, "nullable": false },
+        "duracao": { "type": "string", "nullable": true },
+        "local": { "type": "string", "size": 200, "nullable": false },
+        "cidade": { "type": "string", "size": 120, "nullable": false },
+        "bairro": { "type": "string", "size": 120, "nullable": true },
+        "tipo_entrada": { "type": "string", "size": 20, "nullable": false },
+        "valor_ingresso": { "type": "string", "nullable": false },
+        "imagem": { "type": "string", "nullable": false },
+        "link": { "type": "string", "nullable": true },
+        "nome_organizador": { "type": "string", "size": 150, "nullable": false },
+        "email_organizador": { "type": "string", "size": 150, "nullable": false },
+        "telefone_organizador": { "type": "string", "size": 20, "nullable": true },
+        "aceitou_termos": { "type": "boolean", "nullable": false, "default": true },
+        "created_at": { "type": "datetime", "nullable": false, "default": true },
+        "ativo": { "type": "boolean", "nullable": false, "default": false }
+      }
+    }
+  }
+}
