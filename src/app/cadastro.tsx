@@ -5,7 +5,6 @@ import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-
 import {
   Alert,
   Image,
@@ -18,17 +17,15 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // =====================================================
 // IDENTIDADE VISUAL
-// =====================================================
 
+// =====================================================
 const AZUL = "#07569a";
 const LARANJA = "#ff6633";
 const CINZA = "#68788c";
-
 const categorias = [
   "Shows",
   "Festas",
@@ -40,11 +37,11 @@ const categorias = [
   "Eventos Acadêmicos",
   "Outros",
 ];
-
 const entradas = ["Gratuito", "Pago"];
 
 // =====================================================
 // COMPONENTES AUXILIARES
+
 // =====================================================
 
 function TituloSecao({
@@ -74,21 +71,18 @@ function CampoSelecao({
   onChange: (valor: string) => void;
 }) {
   const [aberto, setAberto] = useState(false);
-
   return (
     <View style={styles.selectContainer}>
       <Pressable style={styles.select} onPress={() => setAberto(!aberto)}>
         <Text style={[styles.selectText, !valor && styles.placeholder]}>
           {valor || placeholder}
         </Text>
-
         <Ionicons
           name={aberto ? "chevron-up" : "chevron-down"}
           size={20}
           color="#34506b"
         />
       </Pressable>
-
       {aberto && (
         <View style={styles.optionsContainer}>
           {opcoes.map((opcao) => (
@@ -111,6 +105,7 @@ function CampoSelecao({
 
 // =====================================================
 // FUNÇÕES DE DATA
+
 // =====================================================
 
 function formatarData(data: Date) {
@@ -127,15 +122,10 @@ function formatarHora(data: Date) {
 
 function converterData(valor: string): Date | null {
   const partes = valor.split("/");
-
   if (partes.length !== 3) return null;
-
   const [dia, mes, ano] = partes.map(Number);
-
   if (!dia || !mes || !ano || ano < 1900) return null;
-
   const data = new Date(ano, mes - 1, dia);
-
   if (
     data.getDate() !== dia ||
     data.getMonth() !== mes - 1 ||
@@ -143,12 +133,12 @@ function converterData(valor: string): Date | null {
   ) {
     return null;
   }
-
   return data;
 }
 
 // =====================================================
 // PÁGINA CADASTRAR EVENTO
+
 // =====================================================
 
 export default function CadastrarEvento() {
@@ -183,6 +173,8 @@ export default function CadastrarEvento() {
   const [valorIngresso, setValorIngresso] = useState("");
   const [imagem, setImagem] = useState<string | null>(null);
   const [nomeImagem, setNomeImagem] = useState("");
+  const [tipoImagem, setTipoImagem] = useState("image/jpeg");
+  const [enviando, setEnviando] = useState(false);
   const [link, setLink] = useState("");
 
   // DADOS DO ORGANIZADOR
@@ -193,8 +185,8 @@ export default function CadastrarEvento() {
 
   // ===================================================
   // MENSAGENS
-  // ===================================================
 
+  // ===================================================
   function mensagem(tituloMsg: string, conteudo: string) {
     if (Platform.OS === "web") {
       if (typeof window !== "undefined") {
@@ -207,28 +199,25 @@ export default function CadastrarEvento() {
 
   // ===================================================
   // NAVEGAÇÃO DO MENU - ROTAS CORRIGIDAS
-  // ===================================================
 
+  // ===================================================
   function irParaInicio() {
     setMenuAberto(false);
     router.navigate("/dashboard");
   }
-
   function irParaEventos() {
     setMenuAberto(false);
     router.navigate("/eventos");
   }
-
   function irParaCadastrarEvento() {
     setMenuAberto(false);
+
     // Já estamos nesta página.
   }
-
   function irParaMinhaConta() {
     setMenuAberto(false);
     router.navigate("/perfil");
   }
-
   function cancelarCadastro() {
     setMenuAberto(false);
     router.navigate("/eventos");
@@ -236,23 +225,20 @@ export default function CadastrarEvento() {
 
   // ===================================================
   // DATA E HORA
-  // ===================================================
 
+  // ===================================================
   function alterarData(event: DateTimePickerEvent, selecionada?: Date) {
     if (Platform.OS === "android") {
       setMostrarData(false);
     }
-
     if (event.type === "set" && selecionada) {
       setDataEvento(selecionada);
     }
   }
-
   function alterarHora(event: DateTimePickerEvent, selecionada?: Date) {
     if (Platform.OS === "android") {
       setMostrarHora(false);
     }
-
     if (event.type === "set" && selecionada) {
       setHorario(selecionada);
     }
@@ -260,8 +246,8 @@ export default function CadastrarEvento() {
 
   // ===================================================
   // SELECIONAR IMAGEM DO EVENTO
-  // ===================================================
 
+  // ===================================================
   async function escolherImagem() {
     try {
       const resultado = await ImagePicker.launchImageLibraryAsync({
@@ -269,13 +255,10 @@ export default function CadastrarEvento() {
         allowsEditing: false,
         quality: 1,
       });
-
       if (resultado.canceled || !resultado.assets.length) {
         return;
       }
-
       const arquivo = resultado.assets[0];
-
       if (
         arquivo.mimeType &&
         !["image/jpeg", "image/png"].includes(arquivo.mimeType)
@@ -283,12 +266,10 @@ export default function CadastrarEvento() {
         mensagem("Formato inválido", "Selecione uma imagem JPG ou PNG.");
         return;
       }
-
       if (arquivo.fileSize && arquivo.fileSize > 2 * 1024 * 1024) {
         mensagem("Imagem muito grande", "O tamanho máximo permitido é 2 MB.");
         return;
       }
-
       setImagem(arquivo.uri);
       setNomeImagem(arquivo.fileName || "Imagem selecionada");
     } catch (erro) {
@@ -298,27 +279,24 @@ export default function CadastrarEvento() {
 
   // ===================================================
   // VALIDAÇÃO DO FORMULÁRIO
-  // ===================================================
 
-  function cadastrarEvento() {
+  // ===================================================
+  async function cadastrarEvento() {
+    if (enviando) return;
     if (!titulo.trim()) {
       mensagem("Campo obrigatório", "Informe o título do evento.");
       return;
     }
-
     if (!categoria) {
       mensagem("Campo obrigatório", "Selecione a categoria.");
       return;
     }
-
     if (!descricao.trim()) {
       mensagem("Campo obrigatório", "Informe a descrição do evento.");
       return;
     }
-
     const dataFinal =
       Platform.OS === "web" ? converterData(dataWeb) : dataEvento;
-
     if (!dataFinal) {
       mensagem(
         "Data inválida",
@@ -326,29 +304,23 @@ export default function CadastrarEvento() {
       );
       return;
     }
-
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-
     if (dataFinal < hoje) {
       mensagem("Data inválida", "A data do evento não pode estar no passado.");
       return;
     }
-
     const horarioFinal =
       Platform.OS === "web"
         ? horaWeb.trim()
         : horario
           ? formatarHora(horario)
           : "";
-
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(horarioFinal)) {
       mensagem("Horário inválido", "Informe o horário no formato HH:MM.");
       return;
     }
-
     const duracaoNumero = Number(duracao.replace(",", "."));
-
     if (
       duracao.trim() &&
       (!Number.isFinite(duracaoNumero) || duracaoNumero <= 0)
@@ -356,53 +328,42 @@ export default function CadastrarEvento() {
       mensagem("Duração inválida", "Informe uma duração maior que zero.");
       return;
     }
-
     if (!localEvento.trim()) {
       mensagem("Campo obrigatório", "Informe o local do evento.");
       return;
     }
-
     if (!cidade.trim()) {
       mensagem("Campo obrigatório", "Informe a cidade.");
       return;
     }
-
     if (!tipoEntrada) {
       mensagem("Campo obrigatório", "Selecione o tipo de entrada.");
       return;
     }
-
     if (tipoEntrada === "Pago") {
       const preco = Number(valorIngresso.replace(",", "."));
-
       if (!valorIngresso.trim() || !Number.isFinite(preco) || preco <= 0) {
         mensagem("Valor inválido", "Informe um valor de ingresso válido.");
         return;
       }
     }
-
     if (!imagem) {
       mensagem("Campo obrigatório", "Selecione uma imagem do evento.");
       return;
     }
-
     if (link.trim() && !/^https?:\/\/[^\s]+\.[^\s]+/i.test(link.trim())) {
       mensagem("Link inválido", "Informe um link HTTP ou HTTPS válido.");
       return;
     }
-
     if (!nomeCompleto.trim()) {
       mensagem("Campo obrigatório", "Informe seu nome completo.");
       return;
     }
-
     const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     if (!emailValido.test(email.trim())) {
       mensagem("E-mail inválido", "Informe um e-mail válido.");
       return;
     }
-
     if (!aceitouTermos) {
       mensagem(
         "Termos e condições",
@@ -411,54 +372,81 @@ export default function CadastrarEvento() {
       return;
     }
 
-    // =================================================
-    // DADOS PRONTOS PARA INTEGRAÇÃO COM A API
-    // =================================================
-
-    const dadosEvento = {
+    // Envio multipart/form-data compatível com o servidor Express/Multer.
+    const formulario = new FormData();
+    const campos: Record<string, string> = {
       titulo: titulo.trim(),
       categoria,
       descricao: descricao.trim(),
-      data: formatarData(dataFinal),
+      data_evento: formatarData(dataFinal),
       horario: horarioFinal,
-      duracao: duracao.trim() ? duracaoNumero : null,
+      duracao: duracao.trim() ? String(duracaoNumero) : "",
       local: localEvento.trim(),
       cidade: cidade.trim(),
       bairro: bairro.trim(),
-      tipoEntrada,
-      valorIngresso:
-        tipoEntrada === "Gratuito"
-          ? 0
-          : Number(valorIngresso.replace(",", ".")),
-      imagem,
+      tipo_entrada: tipoEntrada,
+      valor_ingresso: tipoEntrada === "Gratuito" ? "0" : String(Number(valorIngresso.replace(",", "."))),
       link: link.trim(),
-      organizador: {
-        nome: nomeCompleto.trim(),
-        email: email.trim(),
-        telefone: telefone.trim(),
-      },
-      aceitouTermos,
+      nome_organizador: nomeCompleto.trim(),
+      email_organizador: email.trim(),
+      telefone_organizador: telefone.trim(),
+      aceitou_termos: "true",
     };
 
-    console.log("Evento validado:", dadosEvento);
+    // O título deve chegar antes da imagem para o nome do arquivo no Multer.
+    Object.entries(campos).forEach(([chave, valor]) => formulario.append(chave, valor));
+    setEnviando(true);
+    try {
+      if (Platform.OS === "web") {
+        const respostaImagem = await fetch(imagem);
+        const blob = await respostaImagem.blob();
+        const tipo = blob.type === "image/png" ? "image/png" : tipoImagem;
+        const extensao = tipo === "image/png" ? ".png" : ".jpg";
+        const nome = nomeImagem && /\.(png|jpe?g)$/i.test(nomeImagem) ? nomeImagem : `evento${extensao}`;
+        formulario.append("imagem", blob, nome);
+      } else {
+        const tipo = tipoImagem === "image/png" ? "image/png" : "image/jpeg";
+        const nome = nomeImagem && /\.(png|jpe?g)$/i.test(nomeImagem)
+          ? nomeImagem
+          : tipo === "image/png" ? "evento.png" : "evento.jpg";
+        formulario.append("imagem", { uri: imagem, name: nome, type: tipo } as any);
+      }
 
-    mensagem(
-      "Dados validados!",
-      "O formulário foi preenchido corretamente. Falta conectar o envio ao banco de dados para concluir o cadastro.",
-    );
+      // No navegador, localhost é o próprio computador.
+      // Em celular físico, use o IP local do computador que executa a API.
+      const enderecoAPI = Platform.OS === "web"
+        ? "http://localhost:3600"
+        : "http://192.168.0.111:3600";
+      const resposta = await fetch(`${enderecoAPI}/eventos`, {
+        method: "POST",
+        body: formulario,
+      });
+      const resultado = await resposta.json();
+      if (!resposta.ok || resultado.message !== "Success") {
+        throw new Error(resultado.Error || "Não foi possível cadastrar o evento.");
+      }
+      mensagem("Evento cadastrado!", "Seu evento foi enviado e está aguardando aprovação.");
+      router.navigate("/eventos");
+    } catch (erro) {
+      const detalhe = erro instanceof Error ? erro.message : "Erro desconhecido";
+      mensagem("Erro no cadastro", detalhe === "Network request failed" || detalhe === "Failed to fetch"
+        ? "Não foi possível acessar a API. Confira se o servidor está ligado e se o endereço está correto."
+        : detalhe);
+    } finally {
+      setEnviando(false);
+    }
   }
 
   // ===================================================
   // INTERFACE
-  // ===================================================
 
+  // ===================================================
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         {/* ==========================================
             CABEÇALHO ORIGINAL
         ========================================== */}
-
         <LinearGradient
           colors={["#075b91", "#6b5a64", "#ff6633"]}
           start={{ x: 0, y: 0.5 }}
@@ -467,10 +455,8 @@ export default function CadastrarEvento() {
         >
           <Pressable style={styles.logoArea} onPress={irParaInicio}>
             <FontAwesome name="map-marker" size={30} color="#ffffff" />
-
             <Text style={styles.logo}>Rota do Rolê</Text>
           </Pressable>
-
           <Pressable
             style={styles.botaoMenu}
             onPress={() => setMenuAberto(!menuAberto)}
@@ -483,29 +469,22 @@ export default function CadastrarEvento() {
             />
           </Pressable>
         </LinearGradient>
-
         {/* ==========================================
             MENU HAMBÚRGUER
         ========================================== */}
-
         {menuAberto && (
           <View style={styles.menu}>
             {/* INÍCIO */}
-
             <Pressable style={styles.itemMenu} onPress={irParaInicio}>
               <Ionicons name="home-outline" size={20} color={AZUL} />
               <Text style={styles.textoMenu}>Início</Text>
             </Pressable>
-
             {/* EVENTOS */}
-
             <Pressable style={styles.itemMenu} onPress={irParaEventos}>
               <Ionicons name="calendar-outline" size={20} color={AZUL} />
               <Text style={styles.textoMenu}>Eventos</Text>
             </Pressable>
-
             {/* CADASTRAR EVENTO */}
-
             <Pressable
               style={[styles.itemMenu, styles.itemMenuAtivo]}
               onPress={irParaCadastrarEvento}
@@ -513,20 +492,16 @@ export default function CadastrarEvento() {
               <Ionicons name="add-circle-outline" size={20} color={AZUL} />
               <Text style={styles.textoMenu}>Cadastrar Evento</Text>
             </Pressable>
-
             {/* MINHA CONTA - ROTA CORRIGIDA */}
-
             <Pressable style={styles.itemMenu} onPress={irParaMinhaConta}>
               <Ionicons name="person-outline" size={20} color={AZUL} />
               <Text style={styles.textoMenu}>Minha Conta</Text>
             </Pressable>
           </View>
         )}
-
         {/* ==========================================
             CONTEÚDO PRINCIPAL
         ========================================== */}
-
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
@@ -534,34 +509,26 @@ export default function CadastrarEvento() {
           keyboardShouldPersistTaps="handled"
         >
           {/* TÍTULO */}
-
           <View style={styles.titleArea}>
             <Text style={[styles.titulo, mobile && styles.tituloMobile]}>
               Cadastrar um Novo Evento
             </Text>
-
             <View style={styles.titleLine} />
-
             <Text style={styles.subtitle}>
               Compartilhe seu evento com a comunidade! Preencha os dados abaixo
               e seu evento será publicado em breve após análise.
             </Text>
           </View>
-
           {/* ========================================
               FORMULÁRIO
           ======================================== */}
-
           <View style={[styles.main, mobile && styles.mainMobile]}>
             {/* INFORMAÇÕES BÁSICAS */}
-
             <TituloSecao
               titulo="Informações Básicas"
               icone="information-circle"
             />
-
             <Text style={styles.label}>Título do Evento *</Text>
-
             <TextInput
               style={styles.input}
               placeholder="Festival de Jazz na Praça"
@@ -569,18 +536,14 @@ export default function CadastrarEvento() {
               value={titulo}
               onChangeText={setTitulo}
             />
-
             <Text style={styles.label}>Categoria *</Text>
-
             <CampoSelecao
               valor={categoria}
               placeholder="Selecione a categoria"
               opcoes={categorias}
               onChange={setCategoria}
             />
-
             <Text style={styles.label}>Descrição do Evento *</Text>
-
             <TextInput
               style={[styles.input, styles.textArea]}
               placeholder="Descreva o evento, atrações e informações importantes..."
@@ -591,19 +554,14 @@ export default function CadastrarEvento() {
               value={descricao}
               onChangeText={setDescricao}
             />
-
             {/* ======================================
                 DATA E HORA
             ====================================== */}
-
             <TituloSecao titulo="Data e Hora" icone="calendar" />
-
             <View style={[styles.row, mobile && styles.rowMobile]}>
               {/* DATA */}
-
               <View style={styles.column}>
                 <Text style={styles.label}>Data do Evento *</Text>
-
                 {Platform.OS === "web" ? (
                   <TextInput
                     style={styles.input}
@@ -622,17 +580,13 @@ export default function CadastrarEvento() {
                     >
                       {dataEvento ? formatarData(dataEvento) : "DD/MM/AAAA"}
                     </Text>
-
                     <Ionicons name="calendar-outline" size={20} color={AZUL} />
                   </Pressable>
                 )}
               </View>
-
               {/* HORÁRIO */}
-
               <View style={styles.column}>
                 <Text style={styles.label}>Horário de Início *</Text>
-
                 {Platform.OS === "web" ? (
                   <TextInput
                     style={styles.input}
@@ -651,15 +605,12 @@ export default function CadastrarEvento() {
                     >
                       {horario ? formatarHora(horario) : "HH:MM"}
                     </Text>
-
                     <Ionicons name="time-outline" size={20} color={AZUL} />
                   </Pressable>
                 )}
               </View>
             </View>
-
             {/* CALENDÁRIO NATIVO */}
-
             {mostrarData && Platform.OS !== "web" && (
               <View>
                 <DateTimePicker
@@ -669,7 +620,6 @@ export default function CadastrarEvento() {
                   display="default"
                   onChange={alterarData}
                 />
-
                 {Platform.OS === "ios" && (
                   <Pressable
                     style={styles.pickerDone}
@@ -680,9 +630,7 @@ export default function CadastrarEvento() {
                 )}
               </View>
             )}
-
             {/* SELETOR DE HORÁRIO */}
-
             {mostrarHora && Platform.OS !== "web" && (
               <View>
                 <DateTimePicker
@@ -692,7 +640,6 @@ export default function CadastrarEvento() {
                   display="default"
                   onChange={alterarHora}
                 />
-
                 {Platform.OS === "ios" && (
                   <Pressable
                     style={styles.pickerDone}
@@ -703,9 +650,7 @@ export default function CadastrarEvento() {
                 )}
               </View>
             )}
-
             <Text style={styles.label}>Duração Estimada (em horas)</Text>
-
             <TextInput
               style={styles.input}
               placeholder="Ex: 4"
@@ -714,15 +659,11 @@ export default function CadastrarEvento() {
               value={duracao}
               onChangeText={setDuracao}
             />
-
             {/* ======================================
                 LOCALIZAÇÃO
             ====================================== */}
-
             <TituloSecao titulo="Localização" icone="location" />
-
             <Text style={styles.label}>Local do Evento *</Text>
-
             <TextInput
               style={styles.input}
               placeholder="Ex: Praça Central"
@@ -730,11 +671,9 @@ export default function CadastrarEvento() {
               value={localEvento}
               onChangeText={setLocalEvento}
             />
-
             <View style={[styles.row, mobile && styles.rowMobile]}>
               <View style={styles.column}>
                 <Text style={styles.label}>Cidade *</Text>
-
                 <TextInput
                   style={styles.input}
                   placeholder="Ex: Taquaritinga"
@@ -743,10 +682,8 @@ export default function CadastrarEvento() {
                   onChangeText={setCidade}
                 />
               </View>
-
               <View style={styles.column}>
                 <Text style={styles.label}>Bairro</Text>
-
                 <TextInput
                   style={styles.input}
                   placeholder="Ex: Portal da Serra"
@@ -756,15 +693,11 @@ export default function CadastrarEvento() {
                 />
               </View>
             </View>
-
             {/* ======================================
                 INFORMAÇÕES ADICIONAIS
             ====================================== */}
-
             <TituloSecao titulo="Informações Adicionais" icone="add-circle" />
-
             <Text style={styles.label}>Tipo de Entrada *</Text>
-
             <CampoSelecao
               valor={tipoEntrada}
               placeholder="Selecione o tipo de entrada"
@@ -776,9 +709,7 @@ export default function CadastrarEvento() {
                 }
               }}
             />
-
             <Text style={styles.label}>Valor do Ingresso (se aplicável)</Text>
-
             <TextInput
               style={[
                 styles.input,
@@ -793,25 +724,18 @@ export default function CadastrarEvento() {
               value={valorIngresso}
               onChangeText={setValorIngresso}
             />
-
             {/* IMAGEM */}
-
             <Text style={styles.label}>Imagem do Evento *</Text>
-
             <Pressable style={styles.uploadArea} onPress={escolherImagem}>
               <Feather name="upload" size={20} color={AZUL} />
-
               <Text style={styles.uploadText} numberOfLines={1}>
                 {nomeImagem || "Escolher Arquivo"}
               </Text>
-
               <Ionicons name="image-outline" size={20} color={CINZA} />
             </Pressable>
-
             <Text style={styles.helperText}>
               Formatos aceitos: JPG, PNG. Tamanho máximo: 2MB.
             </Text>
-
             {imagem && (
               <View style={styles.imagePreviewArea}>
                 <Image
@@ -819,25 +743,21 @@ export default function CadastrarEvento() {
                   style={styles.imagePreview}
                   resizeMode="cover"
                 />
-
                 <Pressable
                   style={styles.removeImage}
                   onPress={() => {
                     setImagem(null);
                     setNomeImagem("");
+                  setTipoImagem("image/jpeg");
                   }}
                 >
                   <Ionicons name="trash-outline" size={17} color="#ffffff" />
-
                   <Text style={styles.removeImageText}>Remover imagem</Text>
                 </Pressable>
               </View>
             )}
-
             {/* LINK */}
-
             <Text style={styles.label}>Link para Mais Informações</Text>
-
             <TextInput
               style={styles.input}
               placeholder="https://www.seusite.com"
@@ -848,17 +768,13 @@ export default function CadastrarEvento() {
               value={link}
               onChangeText={setLink}
             />
-
             {/* ======================================
                 SEUS DADOS
             ====================================== */}
-
             <TituloSecao titulo="Seus Dados" icone="person" />
-
             <View style={[styles.row, mobile && styles.rowMobile]}>
               <View style={styles.column}>
                 <Text style={styles.label}>Nome Completo *</Text>
-
                 <TextInput
                   style={styles.input}
                   placeholder="Seu nome"
@@ -867,10 +783,8 @@ export default function CadastrarEvento() {
                   onChangeText={setNomeCompleto}
                 />
               </View>
-
               <View style={styles.column}>
                 <Text style={styles.label}>Email *</Text>
-
                 <TextInput
                   style={styles.input}
                   placeholder="teste@fatectq.edu.br"
@@ -883,9 +797,7 @@ export default function CadastrarEvento() {
                 />
               </View>
             </View>
-
             <Text style={styles.label}>Telefone</Text>
-
             <TextInput
               style={styles.input}
               placeholder="(16) 99999-9999"
@@ -894,11 +806,9 @@ export default function CadastrarEvento() {
               value={telefone}
               onChangeText={setTelefone}
             />
-
             {/* ======================================
                 TERMOS E CONDIÇÕES
             ====================================== */}
-
             <View style={styles.termsContainer}>
               <Pressable
                 style={styles.checkboxArea}
@@ -919,7 +829,6 @@ export default function CadastrarEvento() {
                   )}
                 </View>
               </Pressable>
-
               <Text style={styles.termsText}>
                 Concordo com os{" "}
                 <Text
@@ -936,34 +845,28 @@ export default function CadastrarEvento() {
                 {" *"}
               </Text>
             </View>
-
             {/* ======================================
                 BOTÕES
             ====================================== */}
-
             <View style={[styles.buttonsRow, mobile && styles.buttonsMobile]}>
               {/* CADASTRAR EVENTO */}
-
               <Pressable
                 style={({ pressed }) => [
                   styles.buttonCadastrar,
                   pressed && styles.buttonPressed,
                 ]}
                 onPress={cadastrarEvento}
+                disabled={enviando}
               >
                 <Ionicons name="checkmark" size={19} color="#ffffff" />
-
-                <Text style={styles.buttonText}>Cadastrar Evento</Text>
+                <Text style={styles.buttonText}>{enviando ? "Enviando..." : "Cadastrar Evento"}</Text>
               </Pressable>
-
               {/* CANCELAR */}
-
               <Pressable
                 style={styles.buttonCancelar}
                 onPress={cancelarCadastro}
               >
                 <Ionicons name="close" size={19} color={LARANJA} />
-
                 <Text style={styles.buttonCancelText}>Cancelar</Text>
               </Pressable>
             </View>
@@ -976,6 +879,7 @@ export default function CadastrarEvento() {
 
 // =====================================================
 // ESTILOS
+
 // =====================================================
 
 const styles = StyleSheet.create({
@@ -983,22 +887,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f6f8",
   },
-
   container: {
     flex: 1,
     backgroundColor: "#f5f6f8",
   },
-
   scroll: {
     flex: 1,
   },
-
   scrollContent: {
     paddingBottom: 55,
   },
 
   // CABEÇALHO
-
   header: {
     height: 75,
     paddingHorizontal: 20,
@@ -1007,19 +907,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     zIndex: 10,
   },
-
   logoArea: {
     flexDirection: "row",
     alignItems: "center",
   },
-
   logo: {
     color: "#ffffff",
     fontSize: 24,
     fontWeight: "bold",
     marginLeft: 9,
   },
-
   botaoMenu: {
     width: 45,
     height: 45,
@@ -1028,7 +925,6 @@ const styles = StyleSheet.create({
   },
 
   // MENU HAMBÚRGUER
-
   menu: {
     backgroundColor: "#ffffff",
     borderBottomWidth: 1,
@@ -1037,7 +933,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     zIndex: 9,
   },
-
   itemMenu: {
     height: 50,
     paddingHorizontal: 25,
@@ -1046,11 +941,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eeeeee",
   },
-
   itemMenuAtivo: {
     backgroundColor: "#eef5fb",
   },
-
   textoMenu: {
     color: "#173b5e",
     fontSize: 15,
@@ -1059,25 +952,21 @@ const styles = StyleSheet.create({
   },
 
   // TÍTULO
-
   titleArea: {
     alignItems: "center",
     paddingTop: 55,
     paddingHorizontal: 20,
     paddingBottom: 32,
   },
-
   titulo: {
     color: AZUL,
     fontSize: 34,
     fontWeight: "800",
     textAlign: "center",
   },
-
   tituloMobile: {
     fontSize: 26,
   },
-
   titleLine: {
     width: 70,
     height: 4,
@@ -1086,7 +975,6 @@ const styles = StyleSheet.create({
     marginTop: 18,
     marginBottom: 22,
   },
-
   subtitle: {
     color: CINZA,
     fontSize: 15,
@@ -1096,7 +984,6 @@ const styles = StyleSheet.create({
   },
 
   // CARD PRINCIPAL
-
   main: {
     width: "90%",
     maxWidth: 800,
@@ -1114,7 +1001,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 4,
   },
-
   mainMobile: {
     width: "94%",
     paddingHorizontal: 20,
@@ -1123,14 +1009,12 @@ const styles = StyleSheet.create({
   },
 
   // SEÇÕES
-
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 25,
     marginBottom: 23,
   },
-
   sectionTitle: {
     color: AZUL,
     fontSize: 19,
@@ -1139,14 +1023,12 @@ const styles = StyleSheet.create({
   },
 
   // CAMPOS
-
   label: {
     color: "#123b63",
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 9,
   },
-
   input: {
     width: "100%",
     minHeight: 53,
@@ -1159,49 +1041,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 23,
   },
-
   inputDisabled: {
     backgroundColor: "#f3f4f5",
     color: "#999999",
   },
-
   textArea: {
     height: 115,
     paddingTop: 13,
     paddingBottom: 13,
     textAlignVertical: "top",
   },
-
   placeholder: {
     color: "#999999",
     fontSize: 14,
   },
 
   // COLUNAS
-
   row: {
     width: "100%",
     flexDirection: "row",
     gap: 18,
   },
-
   rowMobile: {
     flexDirection: "column",
     gap: 0,
   },
-
   column: {
     flex: 1,
     minWidth: 0,
   },
 
   // SELEÇÃO
-
   selectContainer: {
     width: "100%",
     marginBottom: 23,
   },
-
   select: {
     width: "100%",
     minHeight: 53,
@@ -1214,14 +1088,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-
   selectText: {
     flex: 1,
     color: "#123b63",
     fontSize: 14,
     paddingRight: 10,
   },
-
   optionsContainer: {
     width: "100%",
     backgroundColor: "#ffffff",
@@ -1232,21 +1104,18 @@ const styles = StyleSheet.create({
     marginTop: 4,
     elevation: 3,
   },
-
   option: {
     paddingHorizontal: 15,
     paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#eeeeee",
   },
-
   optionText: {
     color: "#315b84",
     fontSize: 14,
   },
 
   // DATA E HORA
-
   dateInput: {
     width: "100%",
     height: 53,
@@ -1260,19 +1129,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 23,
   },
-
   dateText: {
     color: "#123b63",
     fontSize: 14,
   },
-
   pickerDone: {
     alignSelf: "flex-end",
     paddingVertical: 10,
     paddingHorizontal: 15,
     marginBottom: 15,
   },
-
   pickerDoneText: {
     color: AZUL,
     fontWeight: "700",
@@ -1280,7 +1146,6 @@ const styles = StyleSheet.create({
   },
 
   // IMAGEM
-
   uploadArea: {
     width: "100%",
     minHeight: 53,
@@ -1293,26 +1158,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-
   uploadText: {
     flex: 1,
     color: "#315b84",
     fontSize: 14,
   },
-
   helperText: {
     color: CINZA,
     fontSize: 12,
     marginTop: 8,
     marginBottom: 23,
   },
-
   imagePreviewArea: {
     width: "100%",
     alignItems: "center",
     marginBottom: 24,
   },
-
   imagePreview: {
     width: "100%",
     maxWidth: 400,
@@ -1320,7 +1181,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#eeeeee",
   },
-
   removeImage: {
     marginTop: 12,
     backgroundColor: "#e74c3c",
@@ -1331,7 +1191,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 7,
   },
-
   removeImageText: {
     color: "#ffffff",
     fontSize: 13,
@@ -1339,7 +1198,6 @@ const styles = StyleSheet.create({
   },
 
   // TERMOS
-
   termsContainer: {
     width: "100%",
     flexDirection: "row",
@@ -1347,12 +1205,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 32,
   },
-
   checkboxArea: {
     padding: 5,
     marginRight: 8,
   },
-
   checkbox: {
     width: 20,
     height: 20,
@@ -1363,19 +1219,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#ffffff",
   },
-
   checkboxChecked: {
     backgroundColor: AZUL,
     borderColor: AZUL,
   },
-
   termsText: {
     flex: 1,
     color: "#123b63",
     fontSize: 13,
     lineHeight: 20,
   },
-
   termsLink: {
     color: AZUL,
     fontWeight: "800",
@@ -1383,18 +1236,15 @@ const styles = StyleSheet.create({
   },
 
   // BOTÕES
-
   buttonsRow: {
     width: "100%",
     flexDirection: "row",
     gap: 15,
   },
-
   buttonsMobile: {
     flexDirection: "column",
     gap: 12,
   },
-
   buttonCadastrar: {
     flex: 1,
     minHeight: 55,
@@ -1406,17 +1256,14 @@ const styles = StyleSheet.create({
     gap: 7,
     paddingHorizontal: 12,
   },
-
   buttonPressed: {
     backgroundColor: "#e94c2b",
   },
-
   buttonText: {
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "800",
   },
-
   buttonCancelar: {
     flex: 1,
     minHeight: 55,
@@ -1430,7 +1277,6 @@ const styles = StyleSheet.create({
     gap: 7,
     paddingHorizontal: 12,
   },
-
   buttonCancelText: {
     color: LARANJA,
     fontSize: 15,
