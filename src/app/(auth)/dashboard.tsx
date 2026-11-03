@@ -1,11 +1,15 @@
-import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
 
+import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
-
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../utils/authContext";
 
@@ -44,14 +48,36 @@ export default function DashBoard() {
     route.navigate("/eventos");
   }
 
+  // ===================================================
+  // CADASTRAR EVENTO - ROTA AJUSTADA
+  // ===================================================
+
   function irParaCadastrarEvento() {
     setMenuAberto(false);
-    route.navigate("/cadastro");
+    route.push("/cadastro");
   }
 
   function irParaMinhaConta() {
     setMenuAberto(false);
     route.navigate("/perfil");
+  }
+
+  // ===================================================
+  // SOBRE NÓS
+  // ===================================================
+
+  function irParaSobreNos() {
+    setMenuAberto(false);
+    route.navigate("/sobrenos");
+  }
+
+  // ===================================================
+  // QUIZ DO ROLÊ
+  // ===================================================
+
+  function irParaQuiz() {
+    setMenuAberto(false);
+    route.navigate("/quizrole");
   }
 
   // ===================================================
@@ -81,6 +107,7 @@ export default function DashBoard() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.pagina}>
+
         {/* ============================================
             CABEÇALHO
         ============================================ */}
@@ -91,12 +118,19 @@ export default function DashBoard() {
           end={{ x: 1, y: 0.5 }}
           style={styles.header}
         >
+
           {/* LOGO */}
 
           <View style={styles.logoArea}>
-            <FontAwesome name="map-marker" size={30} color="#ffffff" />
+            <FontAwesome
+              name="map-marker"
+              size={30}
+              color="#ffffff"
+            />
 
-            <Text style={styles.logo}>Rota do Rolê</Text>
+            <Text style={styles.logo}>
+              Rota do Rolê
+            </Text>
           </View>
 
           {/* BOTÃO HAMBÚRGUER */}
@@ -112,6 +146,7 @@ export default function DashBoard() {
               color="#ffffff"
             />
           </Pressable>
+
         </LinearGradient>
 
         {/* ============================================
@@ -120,45 +155,128 @@ export default function DashBoard() {
 
         {menuAberto && (
           <View style={styles.menu}>
+
             {/* INÍCIO */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaInicio}>
-              <Ionicons name="home-outline" size={20} color="#075b91" />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaInicio}
+            >
+              <Ionicons
+                name="home-outline"
+                size={20}
+                color="#075b91"
+              />
 
-              <Text style={styles.textoMenu}>Início</Text>
+              <Text style={styles.textoMenu}>
+                Início
+              </Text>
             </Pressable>
 
             {/* EVENTOS */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaEventos}>
-              <Ionicons name="calendar-outline" size={20} color="#075b91" />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaEventos}
+            >
+              <Ionicons
+                name="calendar-outline"
+                size={20}
+                color="#075b91"
+              />
 
-              <Text style={styles.textoMenu}>Eventos</Text>
+              <Text style={styles.textoMenu}>
+                Eventos
+              </Text>
             </Pressable>
 
-            {/* CADASTRAR EVENTO */}
+            {/* ========================================
+                CADASTRAR EVENTO
+            ======================================== */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaCadastrarEvento}>
-              <Ionicons name="add-circle-outline" size={20} color="#075b91" />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaCadastrarEvento}
+            >
+              <Ionicons
+                name="add-circle-outline"
+                size={20}
+                color="#075b91"
+              />
 
-              <Text style={styles.textoMenu}>Cadastrar Evento</Text>
+              <Text style={styles.textoMenu}>
+                Cadastrar Evento
+              </Text>
             </Pressable>
 
             {/* MINHA CONTA */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaMinhaConta}>
-              <Ionicons name="person-outline" size={20} color="#075b91" />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaMinhaConta}
+            >
+              <Ionicons
+                name="person-outline"
+                size={20}
+                color="#075b91"
+              />
 
-              <Text style={styles.textoMenu}>Minha Conta</Text>
+              <Text style={styles.textoMenu}>
+                Minha Conta
+              </Text>
+            </Pressable>
+
+            {/* SOBRE NÓS */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaSobreNos}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color="#075b91"
+              />
+
+              <Text style={styles.textoMenu}>
+                Sobre Nós
+              </Text>
+            </Pressable>
+
+            {/* QUIZ DO ROLÊ */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaQuiz}
+            >
+              <Ionicons
+                name="game-controller-outline"
+                size={20}
+                color="#075b91"
+              />
+
+              <Text style={styles.textoMenu}>
+                Qual é o Seu Rolê?
+              </Text>
             </Pressable>
 
             {/* SAIR */}
 
-            <Pressable style={styles.itemMenu} onPress={logout}>
-              <Ionicons name="exit-outline" size={20} color="#ff6633" />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={logout}
+            >
+              <Ionicons
+                name="exit-outline"
+                size={20}
+                color="#ff6633"
+              />
 
-              <Text style={styles.textoSair}>Sair</Text>
+              <Text style={styles.textoSair}>
+                Sair
+              </Text>
             </Pressable>
+
           </View>
         )}
 
@@ -171,28 +289,47 @@ export default function DashBoard() {
           contentContainerStyle={styles.conteudo}
           showsVerticalScrollIndicator={false}
         >
+
           {/* ==========================================
               BANNER PRINCIPAL
           ========================================== */}
 
           <View style={styles.bannerPrincipal}>
+
             <Pressable style={styles.setaBanner}>
-              <Ionicons name="chevron-back" size={28} color="#ffffff" />
+              <Ionicons
+                name="chevron-back"
+                size={28}
+                color="#ffffff"
+              />
             </Pressable>
 
             <View style={styles.bannerConteudo}>
-              <Ionicons name="calendar" size={45} color="#ff6633" />
 
-              <Text style={styles.bannerTitulo}>Descubra seu próximo rolê</Text>
+              <Ionicons
+                name="calendar"
+                size={45}
+                color="#ff6633"
+              />
+
+              <Text style={styles.bannerTitulo}>
+                Descubra seu próximo rolê
+              </Text>
 
               <Text style={styles.bannerTexto}>
                 Encontre eventos, shows, bares e muito mais.
               </Text>
+
             </View>
 
             <Pressable style={styles.setaBanner}>
-              <Ionicons name="chevron-forward" size={28} color="#ffffff" />
+              <Ionicons
+                name="chevron-forward"
+                size={28}
+                color="#ffffff"
+              />
             </Pressable>
+
           </View>
 
           {/* ==========================================
@@ -200,42 +337,71 @@ export default function DashBoard() {
           ========================================== */}
 
           <View style={styles.secao}>
-            <Text style={styles.tituloSecao}>Explore por Categoria</Text>
+
+            <Text style={styles.tituloSecao}>
+              Explore por Categoria
+            </Text>
 
             <View style={styles.linhaTitulo} />
 
             <View style={styles.categorias}>
+
               {/* SHOWS */}
 
               <Pressable style={styles.cardCategoria}>
-                <Ionicons name="musical-notes" size={42} color="#ff6633" />
+                <Ionicons
+                  name="musical-notes"
+                  size={42}
+                  color="#ff6633"
+                />
 
-                <Text style={styles.nomeCategoria}>Shows</Text>
+                <Text style={styles.nomeCategoria}>
+                  Shows
+                </Text>
               </Pressable>
 
               {/* BARES */}
 
               <Pressable style={styles.cardCategoria}>
-                <Ionicons name="beer" size={42} color="#ff6633" />
+                <Ionicons
+                  name="beer"
+                  size={42}
+                  color="#ff6633"
+                />
 
-                <Text style={styles.nomeCategoria}>Bares</Text>
+                <Text style={styles.nomeCategoria}>
+                  Bares
+                </Text>
               </Pressable>
 
               {/* RESTAURANTES */}
 
               <Pressable style={styles.cardCategoria}>
-                <Ionicons name="restaurant" size={42} color="#ff6633" />
+                <Ionicons
+                  name="restaurant"
+                  size={42}
+                  color="#ff6633"
+                />
 
-                <Text style={styles.nomeCategoria}>Restaurantes</Text>
+                <Text style={styles.nomeCategoria}>
+                  Restaurantes
+                </Text>
               </Pressable>
 
               {/* CULTURAL */}
 
               <Pressable style={styles.cardCategoria}>
-                <FontAwesome5 name="theater-masks" size={38} color="#ff6633" />
+                <FontAwesome5
+                  name="theater-masks"
+                  size={38}
+                  color="#ff6633"
+                />
 
-                <Text style={styles.nomeCategoria}>Cultural</Text>
+                <Text style={styles.nomeCategoria}>
+                  Cultural
+                </Text>
               </Pressable>
+
             </View>
           </View>
 
@@ -244,26 +410,47 @@ export default function DashBoard() {
           ========================================== */}
 
           <View style={styles.secaoParceiros}>
-            <Text style={styles.tituloSecao}>Nossos Parceiros</Text>
+
+            <Text style={styles.tituloSecao}>
+              Nossos Parceiros
+            </Text>
 
             <View style={styles.linhaTitulo} />
 
             {/* BANNER DOS PARCEIROS */}
 
             <View style={styles.bannerParceiros}>
+
               <Pressable style={styles.setaParceiro}>
-                <Ionicons name="chevron-back" size={25} color="#ffffff" />
+                <Ionicons
+                  name="chevron-back"
+                  size={25}
+                  color="#ffffff"
+                />
               </Pressable>
 
               <View style={styles.parceiroConteudo}>
-                <FontAwesome5 name="handshake" size={45} color="#ff6633" />
 
-                <Text style={styles.parceiroTitulo}>Espaço para Parceiros</Text>
+                <FontAwesome5
+                  name="handshake"
+                  size={45}
+                  color="#ff6633"
+                />
+
+                <Text style={styles.parceiroTitulo}>
+                  Espaço para Parceiros
+                </Text>
+
               </View>
 
               <Pressable style={styles.setaParceiro}>
-                <Ionicons name="chevron-forward" size={25} color="#ffffff" />
+                <Ionicons
+                  name="chevron-forward"
+                  size={25}
+                  color="#ffffff"
+                />
               </Pressable>
+
             </View>
 
             <Text style={styles.textoParceiro}>
@@ -277,7 +464,8 @@ export default function DashBoard() {
             <Pressable
               style={({ pressed }) => [
                 styles.botaoParceiro,
-                (pressed || patrocinadorHover) && styles.botaoParceiroAtivo,
+                (pressed || patrocinadorHover) &&
+                  styles.botaoParceiroAtivo,
               ]}
               onHoverIn={() => setPatrocinadorHover(true)}
               onHoverOut={() => setPatrocinadorHover(false)}
@@ -285,13 +473,19 @@ export default function DashBoard() {
               accessibilityRole="button"
               accessibilityLabel="Seja um Parceiro ou Patrocinador"
             >
-              <FontAwesome5 name="handshake" size={17} color="#ffffff" />
+              <FontAwesome5
+                name="handshake"
+                size={17}
+                color="#ffffff"
+              />
 
               <Text style={styles.textoBotaoParceiro}>
                 Seja um Parceiro / Patrocinador
               </Text>
             </Pressable>
+
           </View>
+
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -303,6 +497,7 @@ export default function DashBoard() {
 // =====================================================
 
 const styles = StyleSheet.create({
+
   // ===================================================
   // ESTRUTURA
   // ===================================================
@@ -599,4 +794,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: 8,
   },
+
 });

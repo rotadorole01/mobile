@@ -1,3 +1,4 @@
+
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -111,7 +112,7 @@ export default function Eventos() {
   }
 
   // ===================================================
-  // NAVEGAÇÃO CORRIGIDA
+  // NAVEGAÇÃO
   // ===================================================
 
   function irParaInicio() {
@@ -132,6 +133,24 @@ export default function Eventos() {
   function irParaMinhaConta() {
     setMenuAberto(false);
     router.navigate("/perfil");
+  }
+
+  // ===================================================
+  // SOBRE NÓS
+  // ===================================================
+
+  function irParaSobreNos() {
+    setMenuAberto(false);
+    router.navigate("/sobrenos");
+  }
+
+  // ===================================================
+  // QUIZ DO ROLÊ
+  // ===================================================
+
+  function irParaQuizRole() {
+    setMenuAberto(false);
+    router.navigate("/quizrole");
   }
 
   // ===================================================
@@ -242,6 +261,30 @@ export default function Eventos() {
               <Ionicons name="person-outline" size={20} color="#075b91" />
 
               <Text style={styles.textoMenu}>Minha Conta</Text>
+            </Pressable>
+
+            {/* SOBRE NÓS */}
+
+            <Pressable style={styles.itemMenu} onPress={irParaSobreNos}>
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color="#075b91"
+              />
+
+              <Text style={styles.textoMenu}>Sobre Nós</Text>
+            </Pressable>
+
+            {/* QUIZ DO ROLÊ */}
+
+            <Pressable style={styles.itemMenu} onPress={irParaQuizRole}>
+              <Ionicons
+                name="game-controller-outline"
+                size={20}
+                color="#075b91"
+              />
+
+              <Text style={styles.textoMenu}>Quiz do Rolê</Text>
             </Pressable>
           </View>
         )}

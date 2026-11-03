@@ -1,24 +1,21 @@
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
-
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
-
 import {
-    Alert,
-    Image,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    useWindowDimensions,
-    View,
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../utils/authContext";
 
@@ -76,7 +73,6 @@ function TituloSecao({
   return (
     <View style={styles.sectionHeader}>
       <Ionicons name={icone} size={21} color={AZUL} />
-
       <Text style={styles.sectionTitle}>{titulo}</Text>
     </View>
   );
@@ -136,27 +132,18 @@ export default function Perfil() {
   const router = useRouter();
   const auth = useContext(AuthContext);
   const { width } = useWindowDimensions();
-
   const mobile = width < 700;
 
-  // ===================================================
   // MENU HAMBÚRGUER
-  // ===================================================
-
   const [menuAberto, setMenuAberto] = useState(false);
 
   function abrirMenu() {
     setMenuAberto((anterior) => !anterior);
   }
 
-  // ===================================================
   // DADOS DO USUÁRIO
-  // ===================================================
-
   const [perfilSalvo, setPerfilSalvo] = useState<DadosPerfil>(perfilInicial);
-
   const [perfil, setPerfil] = useState<DadosPerfil>(perfilInicial);
-
   const [editando, setEditando] = useState(false);
 
   // ===================================================
@@ -203,12 +190,22 @@ export default function Perfil() {
 
   function irParaCadastro() {
     setMenuAberto(false);
-    router.navigate("/cadastro");
+    router.push("/cadastro");
   }
 
   function irParaMinhaConta() {
     setMenuAberto(false);
     // Já estamos na página Minha Conta.
+  }
+
+  function irParaSobreNos() {
+    setMenuAberto(false);
+    router.navigate("/sobrenos");
+  }
+
+  function irParaQuizRole() {
+    setMenuAberto(false);
+    router.navigate("/quizrole");
   }
 
   // ===================================================
@@ -250,7 +247,7 @@ export default function Perfil() {
 
     try {
       const resultado = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -299,7 +296,6 @@ export default function Perfil() {
 
     if (perfil.nascimento.trim()) {
       const formato = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-
       const partes = perfil.nascimento.match(formato);
 
       if (!partes) {
@@ -312,7 +308,6 @@ export default function Perfil() {
       const ano = Number(partes[3]);
 
       const data = new Date(ano, mes - 1, dia);
-
       const hoje = new Date();
 
       if (
@@ -337,16 +332,8 @@ export default function Perfil() {
       biografia: perfil.biografia.trim(),
     };
 
-    // ===============================================
-    // SALVAMENTO LOCAL TEMPORÁRIO
-    // ===============================================
-    //
-    // Aqui futuramente entra a integração
-    // com Firebase, Supabase ou sua API.
-    //
-    // Os dados ainda não são persistidos
-    // fora desta tela.
-    // ===============================================
+    // Salvamento temporário no estado da tela.
+    // A persistência no banco será integrada posteriormente.
 
     setPerfilSalvo(novosDados);
     setPerfil(novosDados);
@@ -365,9 +352,7 @@ export default function Perfil() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* ==========================================
-            CABEÇALHO ORIGINAL
-        ========================================== */}
+        {/* CABEÇALHO ORIGINAL */}
 
         <LinearGradient
           colors={["#075b91", "#6b5a64", "#ff6633"]}
@@ -377,7 +362,6 @@ export default function Perfil() {
         >
           <Pressable style={styles.logoArea} onPress={irParaInicio}>
             <FontAwesome name="map-marker" size={30} color="#ffffff" />
-
             <Text style={styles.logo}>Rota do Rolê</Text>
           </Pressable>
 
@@ -394,60 +378,70 @@ export default function Perfil() {
           </Pressable>
         </LinearGradient>
 
-        {/* ==========================================
-            MENU HAMBÚRGUER
-        ========================================== */}
+        {/* =================================================
+            MENU HAMBÚRGUER COMPLETO
+        ================================================= */}
 
         {menuAberto && (
           <View style={styles.menu}>
             {/* INÍCIO */}
-
             <Pressable style={styles.itemMenu} onPress={irParaInicio}>
               <Ionicons name="home-outline" size={20} color={AZUL} />
-
               <Text style={styles.textoMenu}>Início</Text>
             </Pressable>
 
             {/* EVENTOS */}
-
             <Pressable style={styles.itemMenu} onPress={irParaEventos}>
               <Ionicons name="calendar-outline" size={20} color={AZUL} />
-
               <Text style={styles.textoMenu}>Eventos</Text>
             </Pressable>
 
             {/* CADASTRAR EVENTO */}
-
             <Pressable style={styles.itemMenu} onPress={irParaCadastro}>
               <Ionicons name="add-circle-outline" size={20} color={AZUL} />
-
               <Text style={styles.textoMenu}>Cadastrar Evento</Text>
             </Pressable>
 
             {/* MINHA CONTA */}
-
             <Pressable
               style={[styles.itemMenu, styles.itemMenuAtivo]}
               onPress={irParaMinhaConta}
             >
               <Ionicons name="person-outline" size={20} color={AZUL} />
-
               <Text style={styles.textoMenu}>Minha Conta</Text>
             </Pressable>
 
-            {/* SAIR */}
+            {/* SOBRE NÓS */}
+            <Pressable style={styles.itemMenu} onPress={irParaSobreNos}>
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color={AZUL}
+              />
+              <Text style={styles.textoMenu}>Sobre Nós</Text>
+            </Pressable>
 
+            {/* QUIZ DO ROLÊ */}
+            <Pressable style={styles.itemMenu} onPress={irParaQuizRole}>
+              <Ionicons
+                name="game-controller-outline"
+                size={20}
+                color={AZUL}
+              />
+              <Text style={styles.textoMenu}>Quiz do Rolê</Text>
+            </Pressable>
+
+            {/* SAIR */}
             <Pressable style={styles.itemMenu} onPress={sair}>
               <Ionicons name="exit-outline" size={20} color={LARANJA} />
-
               <Text style={styles.textoSair}>Sair</Text>
             </Pressable>
           </View>
         )}
 
-        {/* ==========================================
+        {/* =================================================
             CONTEÚDO PRINCIPAL
-        ========================================== */}
+        ================================================= */}
 
         <ScrollView
           style={styles.scroll}
@@ -470,14 +464,10 @@ export default function Perfil() {
             </Text>
           </View>
 
-          {/* ==========================================
-              CARD PRINCIPAL
-          ========================================== */}
+          {/* CARD PRINCIPAL */}
 
           <View style={[styles.main, mobile && styles.mainMobile]}>
-            {/* ========================================
-                FOTO E IDENTIFICAÇÃO
-            ======================================== */}
+            {/* FOTO E IDENTIFICAÇÃO */}
 
             <View style={styles.profileHeader}>
               <Pressable
@@ -487,9 +477,7 @@ export default function Perfil() {
               >
                 {perfil.foto ? (
                   <Image
-                    source={{
-                      uri: perfil.foto,
-                    }}
+                    source={{ uri: perfil.foto }}
                     style={styles.avatarImage}
                   />
                 ) : (
@@ -519,14 +507,12 @@ export default function Perfil() {
                   size={16}
                   color={AZUL}
                 />
-
                 <Text style={styles.statusText}>Área do usuário</Text>
               </View>
 
               {!editando && (
                 <Pressable style={styles.editButton} onPress={iniciarEdicao}>
                   <Feather name="edit-2" size={17} color="#ffffff" />
-
                   <Text style={styles.editButtonText}>Editar Perfil</Text>
                 </Pressable>
               )}
@@ -541,11 +527,12 @@ export default function Perfil() {
               )}
             </View>
 
-            {/* ========================================
-                INFORMAÇÕES PESSOAIS
-            ======================================== */}
+            {/* INFORMAÇÕES PESSOAIS */}
 
-            <TituloSecao titulo="Informações Pessoais" icone="person-circle" />
+            <TituloSecao
+              titulo="Informações Pessoais"
+              icone="person-circle"
+            />
 
             <View style={[styles.row, mobile && styles.rowMobile]}>
               <View style={styles.column}>
@@ -593,9 +580,7 @@ export default function Perfil() {
               </View>
             </View>
 
-            {/* ========================================
-                LOCALIZAÇÃO
-            ======================================== */}
+            {/* LOCALIZAÇÃO */}
 
             <TituloSecao titulo="Minha Localização" icone="location" />
 
@@ -621,9 +606,7 @@ export default function Perfil() {
               </View>
             </View>
 
-            {/* ========================================
-                SOBRE MIM
-            ======================================== */}
+            {/* SOBRE MIM */}
 
             <TituloSecao titulo="Sobre Mim" icone="document-text" />
 
@@ -636,9 +619,7 @@ export default function Perfil() {
               multiline
             />
 
-            {/* ========================================
-                PREFERÊNCIAS
-            ======================================== */}
+            {/* PREFERÊNCIAS */}
 
             <TituloSecao titulo="Minhas Preferências" icone="settings" />
 
@@ -648,7 +629,6 @@ export default function Perfil() {
                   <Text style={styles.preferenceTitle}>
                     Notificações de Eventos
                   </Text>
-
                   <Text style={styles.preferenceDescription}>
                     Preferência para receber avisos sobre eventos e atividades.
                   </Text>
@@ -673,7 +653,6 @@ export default function Perfil() {
                   <Text style={styles.preferenceTitle}>
                     Novidades e Recomendações
                   </Text>
-
                   <Text style={styles.preferenceDescription}>
                     Preferência para receber novidades da Rota do Rolê.
                   </Text>
@@ -692,18 +671,18 @@ export default function Perfil() {
               </View>
             </View>
 
-            {/* ========================================
-                SEGURANÇA
-            ======================================== */}
+            {/* SEGURANÇA */}
 
-            <TituloSecao titulo="Segurança da Conta" icone="shield-checkmark" />
+            <TituloSecao
+              titulo="Segurança da Conta"
+              icone="shield-checkmark"
+            />
 
             <View style={styles.securityArea}>
               <Ionicons name="lock-closed-outline" size={25} color={AZUL} />
 
               <View style={styles.securityInfo}>
                 <Text style={styles.securityTitle}>Senha de Acesso</Text>
-
                 <Text style={styles.securityDescription}>
                   A troca de senha deverá ser conectada ao sistema de
                   autenticação do aplicativo.
@@ -711,9 +690,7 @@ export default function Perfil() {
               </View>
             </View>
 
-            {/* ========================================
-                BOTÕES SALVAR E CANCELAR
-            ======================================== */}
+            {/* BOTÕES SALVAR E CANCELAR */}
 
             {editando && (
               <View style={[styles.buttonsRow, mobile && styles.buttonsMobile]}>
@@ -725,13 +702,16 @@ export default function Perfil() {
                   onPress={salvarPerfil}
                 >
                   <Ionicons name="checkmark" size={20} color="#ffffff" />
-
-                  <Text style={styles.saveButtonText}>Salvar Alterações</Text>
+                  <Text style={styles.saveButtonText}>
+                    Salvar Alterações
+                  </Text>
                 </Pressable>
 
-                <Pressable style={styles.cancelButton} onPress={cancelarEdicao}>
+                <Pressable
+                  style={styles.cancelButton}
+                  onPress={cancelarEdicao}
+                >
                   <Ionicons name="close" size={20} color={LARANJA} />
-
                   <Text style={styles.cancelButtonText}>Cancelar</Text>
                 </Pressable>
               </View>
@@ -755,27 +735,22 @@ export default function Perfil() {
 
 const styles = StyleSheet.create({
   // ESTRUTURA
-
   safeArea: {
     flex: 1,
     backgroundColor: FUNDO,
   },
-
   container: {
     flex: 1,
     backgroundColor: FUNDO,
   },
-
   scroll: {
     flex: 1,
   },
-
   scrollContent: {
     paddingBottom: 55,
   },
 
   // CABEÇALHO
-
   header: {
     height: 75,
     paddingHorizontal: 20,
@@ -784,19 +759,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     zIndex: 10,
   },
-
   logoArea: {
     flexDirection: "row",
     alignItems: "center",
   },
-
   logo: {
     color: "#ffffff",
     fontSize: 24,
     fontWeight: "bold",
     marginLeft: 9,
   },
-
   botaoMenu: {
     width: 45,
     height: 45,
@@ -805,7 +777,6 @@ const styles = StyleSheet.create({
   },
 
   // MENU HAMBÚRGUER
-
   menu: {
     backgroundColor: "#ffffff",
     borderBottomWidth: 1,
@@ -814,7 +785,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     zIndex: 9,
   },
-
   itemMenu: {
     height: 50,
     paddingHorizontal: 25,
@@ -823,18 +793,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eeeeee",
   },
-
   itemMenuAtivo: {
     backgroundColor: "#eef5fb",
   },
-
   textoMenu: {
     color: "#173b5e",
     fontSize: 15,
     fontWeight: "600",
     marginLeft: 12,
   },
-
   textoSair: {
     color: LARANJA,
     fontSize: 15,
@@ -843,25 +810,21 @@ const styles = StyleSheet.create({
   },
 
   // TÍTULO PRINCIPAL
-
   titleArea: {
     alignItems: "center",
     paddingTop: 55,
     paddingHorizontal: 20,
     paddingBottom: 32,
   },
-
   titulo: {
     color: AZUL,
     fontSize: 35,
     fontWeight: "800",
     textAlign: "center",
   },
-
   tituloMobile: {
     fontSize: 28,
   },
-
   titleLine: {
     width: 65,
     height: 4,
@@ -870,7 +833,6 @@ const styles = StyleSheet.create({
     marginTop: 18,
     marginBottom: 22,
   },
-
   subtitle: {
     color: CINZA,
     fontSize: 15,
@@ -880,7 +842,6 @@ const styles = StyleSheet.create({
   },
 
   // CARD PRINCIPAL
-
   main: {
     width: "90%",
     maxWidth: 850,
@@ -890,7 +851,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 35,
     paddingVertical: 35,
     elevation: 4,
-
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -899,7 +859,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
-
   mainMobile: {
     width: "94%",
     paddingHorizontal: 20,
@@ -908,7 +867,6 @@ const styles = StyleSheet.create({
   },
 
   // CABEÇALHO DO PERFIL
-
   profileHeader: {
     alignItems: "center",
     paddingBottom: 25,
@@ -916,14 +874,12 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eeeeee",
     marginBottom: 20,
   },
-
   avatarArea: {
     width: 118,
     height: 118,
     position: "relative",
     marginBottom: 16,
   },
-
   avatarPlaceholder: {
     width: 118,
     height: 118,
@@ -934,7 +890,6 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#d4e6f3",
   },
-
   avatarImage: {
     width: 118,
     height: 118,
@@ -942,7 +897,6 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#d4e6f3",
   },
-
   cameraBadge: {
     position: "absolute",
     right: 0,
@@ -956,7 +910,6 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#ffffff",
   },
-
   profileName: {
     color: AZUL_ESCURO,
     fontSize: 23,
@@ -964,13 +917,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 5,
   },
-
   profileEmail: {
     color: CINZA,
     fontSize: 14,
     textAlign: "center",
   },
-
   statusArea: {
     flexDirection: "row",
     alignItems: "center",
@@ -981,7 +932,6 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 15,
   },
-
   statusText: {
     color: AZUL,
     fontSize: 12,
@@ -989,7 +939,6 @@ const styles = StyleSheet.create({
   },
 
   // BOTÃO EDITAR
-
   editButton: {
     backgroundColor: AZUL,
     minHeight: 43,
@@ -1001,18 +950,15 @@ const styles = StyleSheet.create({
     gap: 9,
     marginTop: 20,
   },
-
   editButtonText: {
     color: "#ffffff",
     fontSize: 14,
     fontWeight: "700",
   },
-
   removePhoto: {
     marginTop: 12,
     padding: 8,
   },
-
   removePhotoText: {
     color: "#e74c3c",
     fontSize: 13,
@@ -1020,7 +966,6 @@ const styles = StyleSheet.create({
   },
 
   // SEÇÕES
-
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -1028,7 +973,6 @@ const styles = StyleSheet.create({
     marginBottom: 23,
     gap: 9,
   },
-
   sectionTitle: {
     color: AZUL,
     fontSize: 19,
@@ -1036,19 +980,16 @@ const styles = StyleSheet.create({
   },
 
   // CAMPOS
-
   campoArea: {
     width: "100%",
     marginBottom: 23,
   },
-
   inputLabel: {
     color: AZUL_ESCURO,
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 9,
   },
-
   input: {
     width: "100%",
     minHeight: 53,
@@ -1060,12 +1001,10 @@ const styles = StyleSheet.create({
     color: AZUL_ESCURO,
     fontSize: 14,
   },
-
   inputBloqueado: {
     backgroundColor: "#f4f6f8",
     borderColor: "#e4e7ea",
   },
-
   textArea: {
     minHeight: 115,
     paddingTop: 13,
@@ -1074,32 +1013,27 @@ const styles = StyleSheet.create({
   },
 
   // COLUNAS RESPONSIVAS
-
   row: {
     width: "100%",
     flexDirection: "row",
     gap: 18,
   },
-
   rowMobile: {
     flexDirection: "column",
     gap: 0,
   },
-
   column: {
     flex: 1,
     minWidth: 0,
   },
 
   // PREFERÊNCIAS
-
   preferencesArea: {
     borderWidth: 1,
     borderColor: "#e4e7ea",
     borderRadius: 10,
     overflow: "hidden",
   },
-
   preferenceRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -1110,18 +1044,15 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eeeeee",
     gap: 10,
   },
-
   preferenceInfo: {
     flex: 1,
   },
-
   preferenceTitle: {
     color: AZUL_ESCURO,
     fontSize: 14,
     fontWeight: "700",
     marginBottom: 6,
   },
-
   preferenceDescription: {
     color: CINZA,
     fontSize: 12,
@@ -1129,7 +1060,6 @@ const styles = StyleSheet.create({
   },
 
   // SEGURANÇA
-
   securityArea: {
     flexDirection: "row",
     alignItems: "center",
@@ -1141,18 +1071,15 @@ const styles = StyleSheet.create({
     gap: 15,
     marginBottom: 25,
   },
-
   securityInfo: {
     flex: 1,
   },
-
   securityTitle: {
     color: AZUL_ESCURO,
     fontSize: 14,
     fontWeight: "700",
     marginBottom: 5,
   },
-
   securityDescription: {
     color: CINZA,
     fontSize: 12,
@@ -1160,19 +1087,16 @@ const styles = StyleSheet.create({
   },
 
   // BOTÕES
-
   buttonsRow: {
     width: "100%",
     flexDirection: "row",
     gap: 15,
     marginTop: 15,
   },
-
   buttonsMobile: {
     flexDirection: "column",
     gap: 12,
   },
-
   saveButton: {
     flex: 1,
     minHeight: 55,
@@ -1184,17 +1108,14 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 12,
   },
-
   buttonPressed: {
     backgroundColor: "#e94c2b",
   },
-
   saveButtonText: {
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "800",
   },
-
   cancelButton: {
     flex: 1,
     minHeight: 55,
@@ -1202,13 +1123,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: LARANJA,
     borderRadius: 8,
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
     paddingHorizontal: 12,
   },
-
   cancelButtonText: {
     color: LARANJA,
     fontSize: 15,
@@ -1216,7 +1135,6 @@ const styles = StyleSheet.create({
   },
 
   // RODAPÉ
-
   footerText: {
     color: CINZA,
     fontSize: 12,

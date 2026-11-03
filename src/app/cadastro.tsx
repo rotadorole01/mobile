@@ -1,3 +1,4 @@
+
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import type { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -5,7 +6,6 @@ import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-
 import {
   Alert,
   Image,
@@ -18,7 +18,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // =====================================================
@@ -77,8 +76,16 @@ function CampoSelecao({
 
   return (
     <View style={styles.selectContainer}>
-      <Pressable style={styles.select} onPress={() => setAberto(!aberto)}>
-        <Text style={[styles.selectText, !valor && styles.placeholder]}>
+      <Pressable
+        style={styles.select}
+        onPress={() => setAberto(!aberto)}
+      >
+        <Text
+          style={[
+            styles.selectText,
+            !valor && styles.placeholder,
+          ]}
+        >
           {valor || placeholder}
         </Text>
 
@@ -100,7 +107,9 @@ function CampoSelecao({
                 setAberto(false);
               }}
             >
-              <Text style={styles.optionText}>{opcao}</Text>
+              <Text style={styles.optionText}>
+                {opcao}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -116,12 +125,14 @@ function CampoSelecao({
 function formatarData(data: Date) {
   const dia = String(data.getDate()).padStart(2, "0");
   const mes = String(data.getMonth() + 1).padStart(2, "0");
+
   return `${dia}/${mes}/${data.getFullYear()}`;
 }
 
 function formatarHora(data: Date) {
   const hora = String(data.getHours()).padStart(2, "0");
   const minuto = String(data.getMinutes()).padStart(2, "0");
+
   return `${hora}:${minuto}`;
 }
 
@@ -156,15 +167,24 @@ export default function CadastrarEvento() {
   const { width } = useWindowDimensions();
   const mobile = width < 700;
 
+  // ===================================================
   // MENU HAMBÚRGUER
+  // ===================================================
+
   const [menuAberto, setMenuAberto] = useState(false);
 
+  // ===================================================
   // INFORMAÇÕES BÁSICAS
+  // ===================================================
+
   const [titulo, setTitulo] = useState("");
   const [categoria, setCategoria] = useState("");
   const [descricao, setDescricao] = useState("");
 
+  // ===================================================
   // DATA E HORA
+  // ===================================================
+
   const [dataEvento, setDataEvento] = useState<Date | null>(null);
   const [horario, setHorario] = useState<Date | null>(null);
   const [dataWeb, setDataWeb] = useState("");
@@ -173,19 +193,30 @@ export default function CadastrarEvento() {
   const [mostrarHora, setMostrarHora] = useState(false);
   const [duracao, setDuracao] = useState("");
 
+  // ===================================================
   // LOCALIZAÇÃO
+  // ===================================================
+
   const [localEvento, setLocalEvento] = useState("");
   const [cidade, setCidade] = useState("");
   const [bairro, setBairro] = useState("");
 
+  // ===================================================
   // INFORMAÇÕES ADICIONAIS
+  // ===================================================
+
   const [tipoEntrada, setTipoEntrada] = useState("");
   const [valorIngresso, setValorIngresso] = useState("");
   const [imagem, setImagem] = useState<string | null>(null);
   const [nomeImagem, setNomeImagem] = useState("");
+  const [tipoImagem, setTipoImagem] = useState("image/jpeg");
+  const [enviando, setEnviando] = useState(false);
   const [link, setLink] = useState("");
 
+  // ===================================================
   // DADOS DO ORGANIZADOR
+  // ===================================================
+
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -206,7 +237,7 @@ export default function CadastrarEvento() {
   }
 
   // ===================================================
-  // NAVEGAÇÃO DO MENU - ROTAS CORRIGIDAS
+  // NAVEGAÇÃO DO MENU
   // ===================================================
 
   function irParaInicio() {
@@ -221,12 +252,30 @@ export default function CadastrarEvento() {
 
   function irParaCadastrarEvento() {
     setMenuAberto(false);
-    // Já estamos nesta página.
+    // Já estamos na página Cadastrar Evento.
   }
 
   function irParaMinhaConta() {
     setMenuAberto(false);
     router.navigate("/perfil");
+  }
+
+  // ===================================================
+  // NOVO: SOBRE NÓS
+  // ===================================================
+
+  function irParaSobreNos() {
+    setMenuAberto(false);
+    router.navigate("/sobrenos");
+  }
+
+  // ===================================================
+  // NOVO: QUIZ DO ROLÊ
+  // ===================================================
+
+  function irParaQuizRole() {
+    setMenuAberto(false);
+    router.navigate("/quizrole");
   }
 
   function cancelarCadastro() {
@@ -238,7 +287,10 @@ export default function CadastrarEvento() {
   // DATA E HORA
   // ===================================================
 
-  function alterarData(event: DateTimePickerEvent, selecionada?: Date) {
+  function alterarData(
+    event: DateTimePickerEvent,
+    selecionada?: Date
+  ) {
     if (Platform.OS === "android") {
       setMostrarData(false);
     }
@@ -248,7 +300,10 @@ export default function CadastrarEvento() {
     }
   }
 
-  function alterarHora(event: DateTimePickerEvent, selecionada?: Date) {
+  function alterarHora(
+    event: DateTimePickerEvent,
+    selecionada?: Date
+  ) {
     if (Platform.OS === "android") {
       setMostrarHora(false);
     }
@@ -280,19 +335,36 @@ export default function CadastrarEvento() {
         arquivo.mimeType &&
         !["image/jpeg", "image/png"].includes(arquivo.mimeType)
       ) {
-        mensagem("Formato inválido", "Selecione uma imagem JPG ou PNG.");
+        mensagem(
+          "Formato inválido",
+          "Selecione uma imagem JPG ou PNG."
+        );
         return;
       }
 
-      if (arquivo.fileSize && arquivo.fileSize > 2 * 1024 * 1024) {
-        mensagem("Imagem muito grande", "O tamanho máximo permitido é 2 MB.");
+      if (
+        arquivo.fileSize &&
+        arquivo.fileSize > 2 * 1024 * 1024
+      ) {
+        mensagem(
+          "Imagem muito grande",
+          "O tamanho máximo permitido é 2 MB."
+        );
         return;
       }
 
       setImagem(arquivo.uri);
       setNomeImagem(arquivo.fileName || "Imagem selecionada");
+      setTipoImagem(
+        arquivo.mimeType === "image/png"
+          ? "image/png"
+          : "image/jpeg"
+      );
     } catch (erro) {
-      mensagem("Erro", "Não foi possível selecionar a imagem.");
+      mensagem(
+        "Erro",
+        "Não foi possível selecionar a imagem."
+      );
     }
   }
 
@@ -300,29 +372,42 @@ export default function CadastrarEvento() {
   // VALIDAÇÃO DO FORMULÁRIO
   // ===================================================
 
-  function cadastrarEvento() {
+  async function cadastrarEvento() {
+    if (enviando) return;
+
     if (!titulo.trim()) {
-      mensagem("Campo obrigatório", "Informe o título do evento.");
+      mensagem(
+        "Campo obrigatório",
+        "Informe o título do evento."
+      );
       return;
     }
 
     if (!categoria) {
-      mensagem("Campo obrigatório", "Selecione a categoria.");
+      mensagem(
+        "Campo obrigatório",
+        "Selecione a categoria."
+      );
       return;
     }
 
     if (!descricao.trim()) {
-      mensagem("Campo obrigatório", "Informe a descrição do evento.");
+      mensagem(
+        "Campo obrigatório",
+        "Informe a descrição do evento."
+      );
       return;
     }
 
     const dataFinal =
-      Platform.OS === "web" ? converterData(dataWeb) : dataEvento;
+      Platform.OS === "web"
+        ? converterData(dataWeb)
+        : dataEvento;
 
     if (!dataFinal) {
       mensagem(
         "Data inválida",
-        "Informe uma data válida no formato DD/MM/AAAA.",
+        "Informe uma data válida no formato DD/MM/AAAA."
       );
       return;
     }
@@ -331,7 +416,10 @@ export default function CadastrarEvento() {
     hoje.setHours(0, 0, 0, 0);
 
     if (dataFinal < hoje) {
-      mensagem("Data inválida", "A data do evento não pode estar no passado.");
+      mensagem(
+        "Data inválida",
+        "A data do evento não pode estar no passado."
+      );
       return;
     }
 
@@ -343,109 +431,243 @@ export default function CadastrarEvento() {
           : "";
 
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(horarioFinal)) {
-      mensagem("Horário inválido", "Informe o horário no formato HH:MM.");
+      mensagem(
+        "Horário inválido",
+        "Informe o horário no formato HH:MM."
+      );
       return;
     }
 
-    const duracaoNumero = Number(duracao.replace(",", "."));
+    const duracaoNumero = Number(
+      duracao.replace(",", ".")
+    );
 
     if (
       duracao.trim() &&
       (!Number.isFinite(duracaoNumero) || duracaoNumero <= 0)
     ) {
-      mensagem("Duração inválida", "Informe uma duração maior que zero.");
+      mensagem(
+        "Duração inválida",
+        "Informe uma duração maior que zero."
+      );
       return;
     }
 
     if (!localEvento.trim()) {
-      mensagem("Campo obrigatório", "Informe o local do evento.");
+      mensagem(
+        "Campo obrigatório",
+        "Informe o local do evento."
+      );
       return;
     }
 
     if (!cidade.trim()) {
-      mensagem("Campo obrigatório", "Informe a cidade.");
+      mensagem(
+        "Campo obrigatório",
+        "Informe a cidade."
+      );
       return;
     }
 
     if (!tipoEntrada) {
-      mensagem("Campo obrigatório", "Selecione o tipo de entrada.");
+      mensagem(
+        "Campo obrigatório",
+        "Selecione o tipo de entrada."
+      );
       return;
     }
 
     if (tipoEntrada === "Pago") {
-      const preco = Number(valorIngresso.replace(",", "."));
+      const preco = Number(
+        valorIngresso.replace(",", ".")
+      );
 
-      if (!valorIngresso.trim() || !Number.isFinite(preco) || preco <= 0) {
-        mensagem("Valor inválido", "Informe um valor de ingresso válido.");
+      if (
+        !valorIngresso.trim() ||
+        !Number.isFinite(preco) ||
+        preco <= 0
+      ) {
+        mensagem(
+          "Valor inválido",
+          "Informe um valor de ingresso válido."
+        );
         return;
       }
     }
 
     if (!imagem) {
-      mensagem("Campo obrigatório", "Selecione uma imagem do evento.");
+      mensagem(
+        "Campo obrigatório",
+        "Selecione uma imagem do evento."
+      );
       return;
     }
 
-    if (link.trim() && !/^https?:\/\/[^\s]+\.[^\s]+/i.test(link.trim())) {
-      mensagem("Link inválido", "Informe um link HTTP ou HTTPS válido.");
+    if (
+      link.trim() &&
+      !/^https?:\/\/[^\s]+\.[^\s]+/i.test(link.trim())
+    ) {
+      mensagem(
+        "Link inválido",
+        "Informe um link HTTP ou HTTPS válido."
+      );
       return;
     }
 
     if (!nomeCompleto.trim()) {
-      mensagem("Campo obrigatório", "Informe seu nome completo.");
+      mensagem(
+        "Campo obrigatório",
+        "Informe seu nome completo."
+      );
       return;
     }
 
     const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailValido.test(email.trim())) {
-      mensagem("E-mail inválido", "Informe um e-mail válido.");
+      mensagem(
+        "E-mail inválido",
+        "Informe um e-mail válido."
+      );
       return;
     }
 
     if (!aceitouTermos) {
       mensagem(
         "Termos e condições",
-        "Você precisa aceitar os termos e condições.",
+        "Você precisa aceitar os termos e condições."
       );
       return;
     }
 
     // =================================================
-    // DADOS PRONTOS PARA INTEGRAÇÃO COM A API
+    // FORMULÁRIO PARA A API
     // =================================================
 
-    const dadosEvento = {
+    const formulario = new FormData();
+
+    const campos: Record<string, string> = {
       titulo: titulo.trim(),
       categoria,
       descricao: descricao.trim(),
-      data: formatarData(dataFinal),
+      data_evento: formatarData(dataFinal),
       horario: horarioFinal,
-      duracao: duracao.trim() ? duracaoNumero : null,
+      duracao: duracao.trim() ? String(duracaoNumero) : "",
       local: localEvento.trim(),
       cidade: cidade.trim(),
       bairro: bairro.trim(),
-      tipoEntrada,
-      valorIngresso:
+      tipo_entrada: tipoEntrada,
+      valor_ingresso:
         tipoEntrada === "Gratuito"
-          ? 0
-          : Number(valorIngresso.replace(",", ".")),
-      imagem,
+          ? "0"
+          : String(
+              Number(valorIngresso.replace(",", "."))
+            ),
       link: link.trim(),
-      organizador: {
-        nome: nomeCompleto.trim(),
-        email: email.trim(),
-        telefone: telefone.trim(),
-      },
-      aceitouTermos,
+      nome_organizador: nomeCompleto.trim(),
+      email_organizador: email.trim(),
+      telefone_organizador: telefone.trim(),
+      aceitou_termos: "true",
     };
 
-    console.log("Evento validado:", dadosEvento);
+    Object.entries(campos).forEach(([chave, valor]) => {
+      formulario.append(chave, valor);
+    });
 
-    mensagem(
-      "Dados validados!",
-      "O formulário foi preenchido corretamente. Falta conectar o envio ao banco de dados para concluir o cadastro.",
-    );
+    setEnviando(true);
+
+    try {
+      if (Platform.OS === "web") {
+        const respostaImagem = await fetch(imagem);
+        const blob = await respostaImagem.blob();
+
+        const tipo =
+          blob.type === "image/png"
+            ? "image/png"
+            : tipoImagem;
+
+        const extensao =
+          tipo === "image/png" ? ".png" : ".jpg";
+
+        const nome =
+          nomeImagem && /\.(png|jpe?g)$/i.test(nomeImagem)
+            ? nomeImagem
+            : `evento${extensao}`;
+
+        formulario.append("imagem", blob, nome);
+      } else {
+        const tipo =
+          tipoImagem === "image/png"
+            ? "image/png"
+            : "image/jpeg";
+
+        const nome =
+          nomeImagem && /\.(png|jpe?g)$/i.test(nomeImagem)
+            ? nomeImagem
+            : tipo === "image/png"
+              ? "evento.png"
+              : "evento.jpg";
+
+        formulario.append(
+          "imagem",
+          {
+            uri: imagem,
+            name: nome,
+            type: tipo,
+          } as any
+        );
+      }
+
+      // Em celular físico, o IP deve ser o do
+      // computador que está executando a API.
+
+      const enderecoAPI =
+        Platform.OS === "web"
+          ? "http://localhost:3600"
+          : "http://192.168.0.111:3600";
+
+      const resposta = await fetch(
+        `${enderecoAPI}/eventos`,
+        {
+          method: "POST",
+          body: formulario,
+        }
+      );
+
+      const resultado = await resposta.json();
+
+      if (
+        !resposta.ok ||
+        resultado.message !== "Success"
+      ) {
+        throw new Error(
+          resultado.Error ||
+          "Não foi possível cadastrar o evento."
+        );
+      }
+
+      mensagem(
+        "Evento cadastrado!",
+        "Seu evento foi enviado e está aguardando aprovação."
+      );
+
+      router.navigate("/eventos");
+    } catch (erro) {
+      const detalhe =
+        erro instanceof Error
+          ? erro.message
+          : "Erro desconhecido";
+
+      mensagem(
+        "Erro no cadastro",
+        detalhe === "Network request failed" ||
+        detalhe === "Failed to fetch"
+          ? "Não foi possível acessar a API. Confira se o servidor está ligado e se o endereço está correto."
+          : detalhe
+      );
+    } finally {
+      setEnviando(false);
+    }
   }
 
   // ===================================================
@@ -455,8 +677,9 @@ export default function CadastrarEvento() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+
         {/* ==========================================
-            CABEÇALHO ORIGINAL
+            CABEÇALHO
         ========================================== */}
 
         <LinearGradient
@@ -465,10 +688,19 @@ export default function CadastrarEvento() {
           end={{ x: 1, y: 0.5 }}
           style={styles.header}
         >
-          <Pressable style={styles.logoArea} onPress={irParaInicio}>
-            <FontAwesome name="map-marker" size={30} color="#ffffff" />
+          <Pressable
+            style={styles.logoArea}
+            onPress={irParaInicio}
+          >
+            <FontAwesome
+              name="map-marker"
+              size={30}
+              color="#ffffff"
+            />
 
-            <Text style={styles.logo}>Rota do Rolê</Text>
+            <Text style={styles.logo}>
+              Rota do Rolê
+            </Text>
           </Pressable>
 
           <Pressable
@@ -490,36 +722,110 @@ export default function CadastrarEvento() {
 
         {menuAberto && (
           <View style={styles.menu}>
+
             {/* INÍCIO */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaInicio}>
-              <Ionicons name="home-outline" size={20} color={AZUL} />
-              <Text style={styles.textoMenu}>Início</Text>
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaInicio}
+            >
+              <Ionicons
+                name="home-outline"
+                size={20}
+                color={AZUL}
+              />
+              <Text style={styles.textoMenu}>
+                Início
+              </Text>
             </Pressable>
 
             {/* EVENTOS */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaEventos}>
-              <Ionicons name="calendar-outline" size={20} color={AZUL} />
-              <Text style={styles.textoMenu}>Eventos</Text>
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaEventos}
+            >
+              <Ionicons
+                name="calendar-outline"
+                size={20}
+                color={AZUL}
+              />
+              <Text style={styles.textoMenu}>
+                Eventos
+              </Text>
             </Pressable>
 
             {/* CADASTRAR EVENTO */}
 
             <Pressable
-              style={[styles.itemMenu, styles.itemMenuAtivo]}
+              style={[
+                styles.itemMenu,
+                styles.itemMenuAtivo,
+              ]}
               onPress={irParaCadastrarEvento}
             >
-              <Ionicons name="add-circle-outline" size={20} color={AZUL} />
-              <Text style={styles.textoMenu}>Cadastrar Evento</Text>
+              <Ionicons
+                name="add-circle-outline"
+                size={20}
+                color={AZUL}
+              />
+              <Text style={styles.textoMenu}>
+                Cadastrar Evento
+              </Text>
             </Pressable>
 
-            {/* MINHA CONTA - ROTA CORRIGIDA */}
+            {/* MINHA CONTA */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaMinhaConta}>
-              <Ionicons name="person-outline" size={20} color={AZUL} />
-              <Text style={styles.textoMenu}>Minha Conta</Text>
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaMinhaConta}
+            >
+              <Ionicons
+                name="person-outline"
+                size={20}
+                color={AZUL}
+              />
+              <Text style={styles.textoMenu}>
+                Minha Conta
+              </Text>
             </Pressable>
+
+            {/* ========================================
+                NOVO: SOBRE NÓS
+            ======================================== */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaSobreNos}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color={AZUL}
+              />
+              <Text style={styles.textoMenu}>
+                Sobre Nós
+              </Text>
+            </Pressable>
+
+            {/* ========================================
+                NOVO: QUIZ DO ROLÊ
+            ======================================== */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaQuizRole}
+            >
+              <Ionicons
+                name="game-controller-outline"
+                size={20}
+                color={AZUL}
+              />
+              <Text style={styles.textoMenu}>
+                Quiz do Rolê
+              </Text>
+            </Pressable>
+
           </View>
         )}
 
@@ -533,18 +839,25 @@ export default function CadastrarEvento() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+
           {/* TÍTULO */}
 
           <View style={styles.titleArea}>
-            <Text style={[styles.titulo, mobile && styles.tituloMobile]}>
+            <Text
+              style={[
+                styles.titulo,
+                mobile && styles.tituloMobile,
+              ]}
+            >
               Cadastrar um Novo Evento
             </Text>
 
             <View style={styles.titleLine} />
 
             <Text style={styles.subtitle}>
-              Compartilhe seu evento com a comunidade! Preencha os dados abaixo
-              e seu evento será publicado em breve após análise.
+              Compartilhe seu evento com a comunidade!
+              Preencha os dados abaixo e seu evento será
+              publicado em breve após análise.
             </Text>
           </View>
 
@@ -552,7 +865,13 @@ export default function CadastrarEvento() {
               FORMULÁRIO
           ======================================== */}
 
-          <View style={[styles.main, mobile && styles.mainMobile]}>
+          <View
+            style={[
+              styles.main,
+              mobile && styles.mainMobile,
+            ]}
+          >
+
             {/* INFORMAÇÕES BÁSICAS */}
 
             <TituloSecao
@@ -560,7 +879,9 @@ export default function CadastrarEvento() {
               icone="information-circle"
             />
 
-            <Text style={styles.label}>Título do Evento *</Text>
+            <Text style={styles.label}>
+              Título do Evento *
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -570,7 +891,9 @@ export default function CadastrarEvento() {
               onChangeText={setTitulo}
             />
 
-            <Text style={styles.label}>Categoria *</Text>
+            <Text style={styles.label}>
+              Categoria *
+            </Text>
 
             <CampoSelecao
               valor={categoria}
@@ -579,10 +902,15 @@ export default function CadastrarEvento() {
               onChange={setCategoria}
             />
 
-            <Text style={styles.label}>Descrição do Evento *</Text>
+            <Text style={styles.label}>
+              Descrição do Evento *
+            </Text>
 
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[
+                styles.input,
+                styles.textArea,
+              ]}
               placeholder="Descreva o evento, atrações e informações importantes..."
               placeholderTextColor="#999999"
               multiline
@@ -596,13 +924,24 @@ export default function CadastrarEvento() {
                 DATA E HORA
             ====================================== */}
 
-            <TituloSecao titulo="Data e Hora" icone="calendar" />
+            <TituloSecao
+              titulo="Data e Hora"
+              icone="calendar"
+            />
 
-            <View style={[styles.row, mobile && styles.rowMobile]}>
+            <View
+              style={[
+                styles.row,
+                mobile && styles.rowMobile,
+              ]}
+            >
+
               {/* DATA */}
 
               <View style={styles.column}>
-                <Text style={styles.label}>Data do Evento *</Text>
+                <Text style={styles.label}>
+                  Data do Evento *
+                </Text>
 
                 {Platform.OS === "web" ? (
                   <TextInput
@@ -618,12 +957,22 @@ export default function CadastrarEvento() {
                     onPress={() => setMostrarData(true)}
                   >
                     <Text
-                      style={dataEvento ? styles.dateText : styles.placeholder}
+                      style={
+                        dataEvento
+                          ? styles.dateText
+                          : styles.placeholder
+                      }
                     >
-                      {dataEvento ? formatarData(dataEvento) : "DD/MM/AAAA"}
+                      {dataEvento
+                        ? formatarData(dataEvento)
+                        : "DD/MM/AAAA"}
                     </Text>
 
-                    <Ionicons name="calendar-outline" size={20} color={AZUL} />
+                    <Ionicons
+                      name="calendar-outline"
+                      size={20}
+                      color={AZUL}
+                    />
                   </Pressable>
                 )}
               </View>
@@ -631,7 +980,9 @@ export default function CadastrarEvento() {
               {/* HORÁRIO */}
 
               <View style={styles.column}>
-                <Text style={styles.label}>Horário de Início *</Text>
+                <Text style={styles.label}>
+                  Horário de Início *
+                </Text>
 
                 {Platform.OS === "web" ? (
                   <TextInput
@@ -647,12 +998,22 @@ export default function CadastrarEvento() {
                     onPress={() => setMostrarHora(true)}
                   >
                     <Text
-                      style={horario ? styles.dateText : styles.placeholder}
+                      style={
+                        horario
+                          ? styles.dateText
+                          : styles.placeholder
+                      }
                     >
-                      {horario ? formatarHora(horario) : "HH:MM"}
+                      {horario
+                        ? formatarHora(horario)
+                        : "HH:MM"}
                     </Text>
 
-                    <Ionicons name="time-outline" size={20} color={AZUL} />
+                    <Ionicons
+                      name="time-outline"
+                      size={20}
+                      color={AZUL}
+                    />
                   </Pressable>
                 )}
               </View>
@@ -675,7 +1036,9 @@ export default function CadastrarEvento() {
                     style={styles.pickerDone}
                     onPress={() => setMostrarData(false)}
                   >
-                    <Text style={styles.pickerDoneText}>Concluir</Text>
+                    <Text style={styles.pickerDoneText}>
+                      Concluir
+                    </Text>
                   </Pressable>
                 )}
               </View>
@@ -698,13 +1061,17 @@ export default function CadastrarEvento() {
                     style={styles.pickerDone}
                     onPress={() => setMostrarHora(false)}
                   >
-                    <Text style={styles.pickerDoneText}>Concluir</Text>
+                    <Text style={styles.pickerDoneText}>
+                      Concluir
+                    </Text>
                   </Pressable>
                 )}
               </View>
             )}
 
-            <Text style={styles.label}>Duração Estimada (em horas)</Text>
+            <Text style={styles.label}>
+              Duração Estimada (em horas)
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -719,9 +1086,14 @@ export default function CadastrarEvento() {
                 LOCALIZAÇÃO
             ====================================== */}
 
-            <TituloSecao titulo="Localização" icone="location" />
+            <TituloSecao
+              titulo="Localização"
+              icone="location"
+            />
 
-            <Text style={styles.label}>Local do Evento *</Text>
+            <Text style={styles.label}>
+              Local do Evento *
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -731,9 +1103,16 @@ export default function CadastrarEvento() {
               onChangeText={setLocalEvento}
             />
 
-            <View style={[styles.row, mobile && styles.rowMobile]}>
+            <View
+              style={[
+                styles.row,
+                mobile && styles.rowMobile,
+              ]}
+            >
               <View style={styles.column}>
-                <Text style={styles.label}>Cidade *</Text>
+                <Text style={styles.label}>
+                  Cidade *
+                </Text>
 
                 <TextInput
                   style={styles.input}
@@ -745,7 +1124,9 @@ export default function CadastrarEvento() {
               </View>
 
               <View style={styles.column}>
-                <Text style={styles.label}>Bairro</Text>
+                <Text style={styles.label}>
+                  Bairro
+                </Text>
 
                 <TextInput
                   style={styles.input}
@@ -761,9 +1142,14 @@ export default function CadastrarEvento() {
                 INFORMAÇÕES ADICIONAIS
             ====================================== */}
 
-            <TituloSecao titulo="Informações Adicionais" icone="add-circle" />
+            <TituloSecao
+              titulo="Informações Adicionais"
+              icone="add-circle"
+            />
 
-            <Text style={styles.label}>Tipo de Entrada *</Text>
+            <Text style={styles.label}>
+              Tipo de Entrada *
+            </Text>
 
             <CampoSelecao
               valor={tipoEntrada}
@@ -771,21 +1157,27 @@ export default function CadastrarEvento() {
               opcoes={entradas}
               onChange={(valor) => {
                 setTipoEntrada(valor);
+
                 if (valor === "Gratuito") {
                   setValorIngresso("");
                 }
               }}
             />
 
-            <Text style={styles.label}>Valor do Ingresso (se aplicável)</Text>
+            <Text style={styles.label}>
+              Valor do Ingresso (se aplicável)
+            </Text>
 
             <TextInput
               style={[
                 styles.input,
-                tipoEntrada === "Gratuito" && styles.inputDisabled,
+                tipoEntrada === "Gratuito" &&
+                  styles.inputDisabled,
               ]}
               placeholder={
-                tipoEntrada === "Gratuito" ? "Entrada gratuita" : "Ex: 50.00"
+                tipoEntrada === "Gratuito"
+                  ? "Entrada gratuita"
+                  : "Ex: 50.00"
               }
               placeholderTextColor="#999999"
               keyboardType="decimal-pad"
@@ -796,20 +1188,37 @@ export default function CadastrarEvento() {
 
             {/* IMAGEM */}
 
-            <Text style={styles.label}>Imagem do Evento *</Text>
+            <Text style={styles.label}>
+              Imagem do Evento *
+            </Text>
 
-            <Pressable style={styles.uploadArea} onPress={escolherImagem}>
-              <Feather name="upload" size={20} color={AZUL} />
+            <Pressable
+              style={styles.uploadArea}
+              onPress={escolherImagem}
+            >
+              <Feather
+                name="upload"
+                size={20}
+                color={AZUL}
+              />
 
-              <Text style={styles.uploadText} numberOfLines={1}>
+              <Text
+                style={styles.uploadText}
+                numberOfLines={1}
+              >
                 {nomeImagem || "Escolher Arquivo"}
               </Text>
 
-              <Ionicons name="image-outline" size={20} color={CINZA} />
+              <Ionicons
+                name="image-outline"
+                size={20}
+                color={CINZA}
+              />
             </Pressable>
 
             <Text style={styles.helperText}>
-              Formatos aceitos: JPG, PNG. Tamanho máximo: 2MB.
+              Formatos aceitos: JPG, PNG.
+              Tamanho máximo: 2MB.
             </Text>
 
             {imagem && (
@@ -825,18 +1234,27 @@ export default function CadastrarEvento() {
                   onPress={() => {
                     setImagem(null);
                     setNomeImagem("");
+                    setTipoImagem("image/jpeg");
                   }}
                 >
-                  <Ionicons name="trash-outline" size={17} color="#ffffff" />
+                  <Ionicons
+                    name="trash-outline"
+                    size={17}
+                    color="#ffffff"
+                  />
 
-                  <Text style={styles.removeImageText}>Remover imagem</Text>
+                  <Text style={styles.removeImageText}>
+                    Remover imagem
+                  </Text>
                 </Pressable>
               </View>
             )}
 
             {/* LINK */}
 
-            <Text style={styles.label}>Link para Mais Informações</Text>
+            <Text style={styles.label}>
+              Link para Mais Informações
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -853,11 +1271,21 @@ export default function CadastrarEvento() {
                 SEUS DADOS
             ====================================== */}
 
-            <TituloSecao titulo="Seus Dados" icone="person" />
+            <TituloSecao
+              titulo="Seus Dados"
+              icone="person"
+            />
 
-            <View style={[styles.row, mobile && styles.rowMobile]}>
+            <View
+              style={[
+                styles.row,
+                mobile && styles.rowMobile,
+              ]}
+            >
               <View style={styles.column}>
-                <Text style={styles.label}>Nome Completo *</Text>
+                <Text style={styles.label}>
+                  Nome Completo *
+                </Text>
 
                 <TextInput
                   style={styles.input}
@@ -869,7 +1297,9 @@ export default function CadastrarEvento() {
               </View>
 
               <View style={styles.column}>
-                <Text style={styles.label}>Email *</Text>
+                <Text style={styles.label}>
+                  Email *
+                </Text>
 
                 <TextInput
                   style={styles.input}
@@ -884,7 +1314,9 @@ export default function CadastrarEvento() {
               </View>
             </View>
 
-            <Text style={styles.label}>Telefone</Text>
+            <Text style={styles.label}>
+              Telefone
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -906,16 +1338,23 @@ export default function CadastrarEvento() {
                 accessibilityState={{
                   checked: aceitouTermos,
                 }}
-                onPress={() => setAceitouTermos(!aceitouTermos)}
+                onPress={() =>
+                  setAceitouTermos(!aceitouTermos)
+                }
               >
                 <View
                   style={[
                     styles.checkbox,
-                    aceitouTermos && styles.checkboxChecked,
+                    aceitouTermos &&
+                      styles.checkboxChecked,
                   ]}
                 >
                   {aceitouTermos && (
-                    <Ionicons name="checkmark" size={14} color="#ffffff" />
+                    <Ionicons
+                      name="checkmark"
+                      size={14}
+                      color="#ffffff"
+                    />
                   )}
                 </View>
               </Pressable>
@@ -927,7 +1366,7 @@ export default function CadastrarEvento() {
                   onPress={() =>
                     mensagem(
                       "Termos e condições",
-                      "O link oficial dos termos de uso ainda precisa ser configurado.",
+                      "O link oficial dos termos de uso ainda precisa ser configurado."
                     )
                   }
                 >
@@ -941,7 +1380,13 @@ export default function CadastrarEvento() {
                 BOTÕES
             ====================================== */}
 
-            <View style={[styles.buttonsRow, mobile && styles.buttonsMobile]}>
+            <View
+              style={[
+                styles.buttonsRow,
+                mobile && styles.buttonsMobile,
+              ]}
+            >
+
               {/* CADASTRAR EVENTO */}
 
               <Pressable
@@ -950,10 +1395,19 @@ export default function CadastrarEvento() {
                   pressed && styles.buttonPressed,
                 ]}
                 onPress={cadastrarEvento}
+                disabled={enviando}
               >
-                <Ionicons name="checkmark" size={19} color="#ffffff" />
+                <Ionicons
+                  name="checkmark"
+                  size={19}
+                  color="#ffffff"
+                />
 
-                <Text style={styles.buttonText}>Cadastrar Evento</Text>
+                <Text style={styles.buttonText}>
+                  {enviando
+                    ? "Enviando..."
+                    : "Cadastrar Evento"}
+                </Text>
               </Pressable>
 
               {/* CANCELAR */}
@@ -962,11 +1416,18 @@ export default function CadastrarEvento() {
                 style={styles.buttonCancelar}
                 onPress={cancelarCadastro}
               >
-                <Ionicons name="close" size={19} color={LARANJA} />
+                <Ionicons
+                  name="close"
+                  size={19}
+                  color={LARANJA}
+                />
 
-                <Text style={styles.buttonCancelText}>Cancelar</Text>
+                <Text style={styles.buttonCancelText}>
+                  Cancelar
+                </Text>
               </Pressable>
             </View>
+
           </View>
         </ScrollView>
       </View>
