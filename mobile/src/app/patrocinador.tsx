@@ -1,19 +1,18 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 
 import {
-    Alert,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    useWindowDimensions,
-    View,
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -137,7 +136,7 @@ function validarCNPJ(valor: string) {
   function calcularDigito(base: string, pesos: number[]) {
     const soma = pesos.reduce(
       (total, peso, indice) => total + Number(base[indice]) * peso,
-      0,
+      0
     );
 
     const resto = soma % 11;
@@ -145,15 +144,13 @@ function validarCNPJ(valor: string) {
     return resto < 2 ? 0 : 11 - resto;
   }
 
-  const primeiro = calcularDigito(
-    numeros.slice(0, 12),
-    [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2],
-  );
+  const primeiro = calcularDigito(numeros.slice(0, 12), [
+    5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2,
+  ]);
 
-  const segundo = calcularDigito(
-    numeros.slice(0, 13),
-    [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2],
-  );
+  const segundo = calcularDigito(numeros.slice(0, 13), [
+    6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2,
+  ]);
 
   return primeiro === Number(numeros[12]) && segundo === Number(numeros[13]);
 }
@@ -174,10 +171,9 @@ function formatarTelefone(valor: string) {
   }
 
   if (numeros.length <= 10) {
-    return `(${numeros.slice(0, 2)}) ${numeros.slice(
-      2,
-      6,
-    )}-${numeros.slice(6)}`;
+    return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(
+      6
+    )}`;
   }
 
   return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
@@ -189,9 +185,7 @@ function formatarTelefone(valor: string) {
 
 export default function Patrocinador() {
   const router = useRouter();
-
   const { width } = useWindowDimensions();
-
   const mobile = width < 700;
 
   // ===================================================
@@ -252,6 +246,24 @@ export default function Patrocinador() {
   }
 
   // ===================================================
+  // SOBRE NÓS - NOVO
+  // ===================================================
+
+  function irParaSobreNos() {
+    setMenuAberto(false);
+    router.navigate("/sobrenos");
+  }
+
+  // ===================================================
+  // QUIZ DO ROLÊ - NOVO
+  // ===================================================
+
+  function irParaQuiz() {
+    setMenuAberto(false);
+    router.navigate("/quiz");
+  }
+
+  // ===================================================
   // VALIDAR FORMULÁRIO
   // ===================================================
 
@@ -259,7 +271,7 @@ export default function Patrocinador() {
     if (!empresa.trim()) {
       mostrarMensagem(
         "Campo obrigatório",
-        "Informe o nome da empresa ou negócio.",
+        "Informe o nome da empresa ou negócio."
       );
       return;
     }
@@ -267,7 +279,7 @@ export default function Patrocinador() {
     if (cnpj.trim() && !validarCNPJ(cnpj)) {
       mostrarMensagem(
         "CNPJ inválido",
-        "Informe um CNPJ válido ou deixe o campo em branco.",
+        "Informe um CNPJ válido ou deixe o campo em branco."
       );
       return;
     }
@@ -287,7 +299,7 @@ export default function Patrocinador() {
     if (telefoneNumeros.length !== 10 && telefoneNumeros.length !== 11) {
       mostrarMensagem(
         "Telefone inválido",
-        "Informe um telefone com DDD válido.",
+        "Informe um telefone com DDD válido."
       );
       return;
     }
@@ -297,7 +309,7 @@ export default function Patrocinador() {
     if (!emailValido.test(email.trim())) {
       mostrarMensagem(
         "E-mail inválido",
-        "Informe um e-mail corporativo válido.",
+        "Informe um e-mail corporativo válido."
       );
       return;
     }
@@ -305,7 +317,7 @@ export default function Patrocinador() {
     if (!interesse) {
       mostrarMensagem(
         "Campo obrigatório",
-        "Selecione seu interesse principal.",
+        "Selecione seu interesse principal."
       );
       return;
     }
@@ -331,7 +343,7 @@ export default function Patrocinador() {
 
     mostrarMensagem(
       "Formulário validado",
-      "Os dados foram preenchidos corretamente. A solicitação ainda não foi enviada porque a integração com o servidor precisa ser configurada.",
+      "Os dados foram preenchidos corretamente. A solicitação ainda não foi enviada porque a integração com o servidor precisa ser configurada."
     );
   }
 
@@ -407,6 +419,30 @@ export default function Patrocinador() {
               <Ionicons name="person-outline" size={20} color={AZUL} />
 
               <Text style={styles.textoMenu}>Minha Conta</Text>
+            </Pressable>
+
+            {/* SOBRE NÓS */}
+
+            <Pressable style={styles.itemMenu} onPress={irParaSobreNos}>
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color={AZUL}
+              />
+
+              <Text style={styles.textoMenu}>Sobre Nós</Text>
+            </Pressable>
+
+            {/* QUIZ DO ROLÊ */}
+
+            <Pressable style={styles.itemMenu} onPress={irParaQuiz}>
+              <Ionicons
+                name="help-circle-outline"
+                size={20}
+                color={AZUL}
+              />
+
+              <Text style={styles.textoMenu}>Quiz do Rolê</Text>
             </Pressable>
           </View>
         )}

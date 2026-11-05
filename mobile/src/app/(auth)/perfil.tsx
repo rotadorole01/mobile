@@ -1,24 +1,22 @@
-import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 
+import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
-
 import {
-    Alert,
-    Image,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    useWindowDimensions,
-    View,
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../utils/authContext";
 
@@ -33,7 +31,7 @@ const FUNDO = "#f5f6f8";
 const CINZA = "#68788c";
 
 // =====================================================
-// ESTRUTURA DOS DADOS DO PERFIL
+// DADOS DO PERFIL
 // =====================================================
 
 type DadosPerfil = {
@@ -63,7 +61,7 @@ const perfilInicial: DadosPerfil = {
 };
 
 // =====================================================
-// COMPONENTE TÍTULO DE SEÇÃO
+// COMPONENTE TÍTULO
 // =====================================================
 
 function TituloSecao({
@@ -76,14 +74,13 @@ function TituloSecao({
   return (
     <View style={styles.sectionHeader}>
       <Ionicons name={icone} size={21} color={AZUL} />
-
       <Text style={styles.sectionTitle}>{titulo}</Text>
     </View>
   );
 }
 
 // =====================================================
-// COMPONENTE CAMPO DE PERFIL
+// COMPONENTE CAMPO
 // =====================================================
 
 function CampoPerfil({
@@ -119,7 +116,9 @@ function CampoPerfil({
         placeholderTextColor="#9aa4ad"
         editable={editando}
         keyboardType={tipo}
-        autoCapitalize={tipo === "email-address" ? "none" : "sentences"}
+        autoCapitalize={
+          tipo === "email-address" ? "none" : "sentences"
+        }
         autoCorrect={tipo !== "email-address"}
         multiline={multiline}
         textAlignVertical={multiline ? "top" : "center"}
@@ -140,32 +139,34 @@ export default function Perfil() {
   const mobile = width < 700;
 
   // ===================================================
-  // MENU HAMBÚRGUER
+  // ESTADOS
   // ===================================================
 
   const [menuAberto, setMenuAberto] = useState(false);
+
+  const [perfilSalvo, setPerfilSalvo] =
+    useState<DadosPerfil>(perfilInicial);
+
+  const [perfil, setPerfil] =
+    useState<DadosPerfil>(perfilInicial);
+
+  const [editando, setEditando] = useState(false);
+
+  // ===================================================
+  // MENU HAMBÚRGUER
+  // ===================================================
 
   function abrirMenu() {
     setMenuAberto((anterior) => !anterior);
   }
 
   // ===================================================
-  // DADOS DO USUÁRIO
-  // ===================================================
-
-  const [perfilSalvo, setPerfilSalvo] = useState<DadosPerfil>(perfilInicial);
-
-  const [perfil, setPerfil] = useState<DadosPerfil>(perfilInicial);
-
-  const [editando, setEditando] = useState(false);
-
-  // ===================================================
-  // ATUALIZAR CAMPO
+  // ATUALIZAR CAMPOS
   // ===================================================
 
   function atualizarCampo<K extends keyof DadosPerfil>(
     campo: K,
-    valor: DadosPerfil[K],
+    valor: DadosPerfil[K]
   ) {
     setPerfil((anterior) => ({
       ...anterior,
@@ -208,17 +209,31 @@ export default function Perfil() {
 
   function irParaMinhaConta() {
     setMenuAberto(false);
-    // Já estamos na página Minha Conta.
+  }
+
+  function irParaSobreNos() {
+    setMenuAberto(false);
+    router.navigate("/sobrenos");
+  }
+
+  function irParaQuiz() {
+    setMenuAberto(false);
+    router.navigate("/quiz");
   }
 
   // ===================================================
   // SAIR DA CONTA
   // ===================================================
 
-  function sair() {
+  async function sair() {
     setMenuAberto(false);
-    auth.logOut();
-    router.replace("/login");
+
+    try {
+      await auth.logOut();
+      router.replace("/login");
+    } catch (erro) {
+      console.error("Erro ao sair:", erro);
+    }
   }
 
   // ===================================================
@@ -230,10 +245,6 @@ export default function Perfil() {
     setEditando(true);
   }
 
-  // ===================================================
-  // CANCELAR EDIÇÃO
-  // ===================================================
-
   function cancelarEdicao() {
     setPerfil({ ...perfilSalvo });
     setEditando(false);
@@ -244,30 +255,31 @@ export default function Perfil() {
   // ===================================================
 
   async function escolherFoto() {
-    if (!editando) {
-      return;
-    }
+    if (!editando) return;
 
     try {
-      const resultado = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-      });
+      const resultado =
+        await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ["images"],
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.8,
+        });
 
-      if (resultado.canceled) {
-        return;
-      }
+      if (resultado.canceled) return;
 
       const arquivo = resultado.assets[0];
 
-      if (!arquivo?.uri) {
-        return;
-      }
+      if (!arquivo?.uri) return;
 
-      if (arquivo.fileSize && arquivo.fileSize > 5 * 1024 * 1024) {
-        mensagem("Imagem muito grande", "Escolha uma foto de até 5 MB.");
+      if (
+        arquivo.fileSize &&
+        arquivo.fileSize > 5 * 1024 * 1024
+      ) {
+        mensagem(
+          "Imagem muito grande",
+          "Escolha uma foto de até 5 MB."
+        );
         return;
       }
 
@@ -275,35 +287,43 @@ export default function Perfil() {
     } catch (erro) {
       mensagem(
         "Erro ao selecionar imagem",
-        "Não foi possível acessar a galeria.",
+        "Não foi possível acessar a galeria."
       );
     }
   }
 
   // ===================================================
-  // SALVAR ALTERAÇÕES
+  // SALVAR PERFIL
   // ===================================================
 
   function salvarPerfil() {
     if (!perfil.nome.trim()) {
-      mensagem("Campo obrigatório", "Informe seu nome completo.");
+      mensagem(
+        "Campo obrigatório",
+        "Informe seu nome completo."
+      );
       return;
     }
 
     const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailValido.test(perfil.email.trim())) {
-      mensagem("E-mail inválido", "Informe um endereço de e-mail válido.");
+      mensagem(
+        "E-mail inválido",
+        "Informe um endereço de e-mail válido."
+      );
       return;
     }
 
     if (perfil.nascimento.trim()) {
       const formato = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-
       const partes = perfil.nascimento.match(formato);
 
       if (!partes) {
-        mensagem("Data inválida", "Informe a data no formato DD/MM/AAAA.");
+        mensagem(
+          "Data inválida",
+          "Informe a data no formato DD/MM/AAAA."
+        );
         return;
       }
 
@@ -312,7 +332,6 @@ export default function Perfil() {
       const ano = Number(partes[3]);
 
       const data = new Date(ano, mes - 1, dia);
-
       const hoje = new Date();
 
       if (
@@ -322,7 +341,10 @@ export default function Perfil() {
         data.getFullYear() !== ano ||
         data > hoje
       ) {
-        mensagem("Data inválida", "Informe uma data de nascimento válida.");
+        mensagem(
+          "Data inválida",
+          "Informe uma data de nascimento válida."
+        );
         return;
       }
     }
@@ -337,16 +359,8 @@ export default function Perfil() {
       biografia: perfil.biografia.trim(),
     };
 
-    // ===============================================
-    // SALVAMENTO LOCAL TEMPORÁRIO
-    // ===============================================
-    //
-    // Aqui futuramente entra a integração
-    // com Firebase, Supabase ou sua API.
-    //
-    // Os dados ainda não são persistidos
-    // fora desta tela.
-    // ===============================================
+    // Salvamento local temporário.
+    // Integração com API ainda não implementada.
 
     setPerfilSalvo(novosDados);
     setPerfil(novosDados);
@@ -354,19 +368,20 @@ export default function Perfil() {
 
     mensagem(
       "Alterações aplicadas",
-      "Os dados foram atualizados nesta tela. Para mantê-los após fechar o aplicativo, será necessário conectar o banco de dados.",
+      "Os dados foram atualizados nesta tela. Para mantê-los após fechar o aplicativo, será necessário conectar o banco de dados."
     );
   }
 
   // ===================================================
-  // INTERFACE
+  // INTERFACE PRINCIPAL
   // ===================================================
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+
         {/* ==========================================
-            CABEÇALHO ORIGINAL
+            CABEÇALHO
         ========================================== */}
 
         <LinearGradient
@@ -375,10 +390,19 @@ export default function Perfil() {
           end={{ x: 1, y: 0.5 }}
           style={styles.header}
         >
-          <Pressable style={styles.logoArea} onPress={irParaInicio}>
-            <FontAwesome name="map-marker" size={30} color="#ffffff" />
+          <Pressable
+            style={styles.logoArea}
+            onPress={irParaInicio}
+          >
+            <FontAwesome
+              name="map-marker"
+              size={30}
+              color="#ffffff"
+            />
 
-            <Text style={styles.logo}>Rota do Rolê</Text>
+            <Text style={styles.logo}>
+              Rota do Rolê
+            </Text>
           </Pressable>
 
           <Pressable
@@ -400,48 +424,131 @@ export default function Perfil() {
 
         {menuAberto && (
           <View style={styles.menu}>
+
             {/* INÍCIO */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaInicio}>
-              <Ionicons name="home-outline" size={20} color={AZUL} />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaInicio}
+            >
+              <Ionicons
+                name="home-outline"
+                size={20}
+                color={AZUL}
+              />
 
-              <Text style={styles.textoMenu}>Início</Text>
+              <Text style={styles.textoMenu}>
+                Início
+              </Text>
             </Pressable>
 
             {/* EVENTOS */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaEventos}>
-              <Ionicons name="calendar-outline" size={20} color={AZUL} />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaEventos}
+            >
+              <Ionicons
+                name="calendar-outline"
+                size={20}
+                color={AZUL}
+              />
 
-              <Text style={styles.textoMenu}>Eventos</Text>
+              <Text style={styles.textoMenu}>
+                Eventos
+              </Text>
             </Pressable>
 
             {/* CADASTRAR EVENTO */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaCadastro}>
-              <Ionicons name="add-circle-outline" size={20} color={AZUL} />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaCadastro}
+            >
+              <Ionicons
+                name="add-circle-outline"
+                size={20}
+                color={AZUL}
+              />
 
-              <Text style={styles.textoMenu}>Cadastrar Evento</Text>
+              <Text style={styles.textoMenu}>
+                Cadastrar Evento
+              </Text>
             </Pressable>
 
-            {/* MINHA CONTA */}
+            {/* ========================================
+                MINHA CONTA - SELECIONADO EM LARANJA
+            ======================================== */}
 
             <Pressable
-              style={[styles.itemMenu, styles.itemMenuAtivo]}
+              style={[
+                styles.itemMenu,
+                styles.itemMenuAtivo,
+              ]}
               onPress={irParaMinhaConta}
             >
-              <Ionicons name="person-outline" size={20} color={AZUL} />
+              <Ionicons
+                name="person"
+                size={20}
+                color={LARANJA}
+              />
 
-              <Text style={styles.textoMenu}>Minha Conta</Text>
+              <Text style={styles.textoMenuAtivo}>
+                Minha Conta
+              </Text>
+            </Pressable>
+
+            {/* SOBRE NÓS */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaSobreNos}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color={AZUL}
+              />
+
+              <Text style={styles.textoMenu}>
+                Sobre Nós
+              </Text>
+            </Pressable>
+
+            {/* QUIZ DO ROLÊ */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaQuiz}
+            >
+              <Ionicons
+                name="help-circle-outline"
+                size={20}
+                color={AZUL}
+              />
+
+              <Text style={styles.textoMenu}>
+                Quiz do Rolê
+              </Text>
             </Pressable>
 
             {/* SAIR */}
 
-            <Pressable style={styles.itemMenu} onPress={sair}>
-              <Ionicons name="exit-outline" size={20} color={LARANJA} />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={sair}
+            >
+              <Ionicons
+                name="exit-outline"
+                size={20}
+                color={LARANJA}
+              />
 
-              <Text style={styles.textoSair}>Sair</Text>
+              <Text style={styles.textoSair}>
+                Sair
+              </Text>
             </Pressable>
+
           </View>
         )}
 
@@ -455,26 +562,37 @@ export default function Perfil() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+
           {/* TÍTULO PRINCIPAL */}
 
           <View style={styles.titleArea}>
-            <Text style={[styles.titulo, mobile && styles.tituloMobile]}>
+            <Text
+              style={[
+                styles.titulo,
+                mobile && styles.tituloMobile,
+              ]}
+            >
               Minha Conta
             </Text>
 
             <View style={styles.titleLine} />
 
             <Text style={styles.subtitle}>
-              Gerencie suas informações pessoais, atualize seus dados e
-              personalize sua experiência na Rota do Rolê.
+              Gerencie suas informações pessoais,
+              atualize seus dados e personalize sua
+              experiência na Rota do Rolê.
             </Text>
           </View>
 
-          {/* ==========================================
-              CARD PRINCIPAL
-          ========================================== */}
+          {/* CARD PRINCIPAL */}
 
-          <View style={[styles.main, mobile && styles.mainMobile]}>
+          <View
+            style={[
+              styles.main,
+              mobile && styles.mainMobile,
+            ]}
+          >
+
             {/* ========================================
                 FOTO E IDENTIFICAÇÃO
             ======================================== */}
@@ -487,20 +605,26 @@ export default function Perfil() {
               >
                 {perfil.foto ? (
                   <Image
-                    source={{
-                      uri: perfil.foto,
-                    }}
+                    source={{ uri: perfil.foto }}
                     style={styles.avatarImage}
                   />
                 ) : (
                   <View style={styles.avatarPlaceholder}>
-                    <Ionicons name="person" size={53} color={AZUL} />
+                    <Ionicons
+                      name="person"
+                      size={53}
+                      color={AZUL}
+                    />
                   </View>
                 )}
 
                 {editando && (
                   <View style={styles.cameraBadge}>
-                    <Feather name="camera" size={17} color="#ffffff" />
+                    <Feather
+                      name="camera"
+                      size={17}
+                      color="#ffffff"
+                    />
                   </View>
                 )}
               </Pressable>
@@ -510,7 +634,8 @@ export default function Perfil() {
               </Text>
 
               <Text style={styles.profileEmail}>
-                {perfil.email || "Adicione suas informações pessoais"}
+                {perfil.email ||
+                  "Adicione suas informações pessoais"}
               </Text>
 
               <View style={styles.statusArea}>
@@ -520,23 +645,38 @@ export default function Perfil() {
                   color={AZUL}
                 />
 
-                <Text style={styles.statusText}>Área do usuário</Text>
+                <Text style={styles.statusText}>
+                  Área do usuário
+                </Text>
               </View>
 
               {!editando && (
-                <Pressable style={styles.editButton} onPress={iniciarEdicao}>
-                  <Feather name="edit-2" size={17} color="#ffffff" />
+                <Pressable
+                  style={styles.editButton}
+                  onPress={iniciarEdicao}
+                >
+                  <Feather
+                    name="edit-2"
+                    size={17}
+                    color="#ffffff"
+                  />
 
-                  <Text style={styles.editButtonText}>Editar Perfil</Text>
+                  <Text style={styles.editButtonText}>
+                    Editar Perfil
+                  </Text>
                 </Pressable>
               )}
 
               {editando && perfil.foto && (
                 <Pressable
                   style={styles.removePhoto}
-                  onPress={() => atualizarCampo("foto", null)}
+                  onPress={() =>
+                    atualizarCampo("foto", null)
+                  }
                 >
-                  <Text style={styles.removePhotoText}>Remover foto</Text>
+                  <Text style={styles.removePhotoText}>
+                    Remover foto
+                  </Text>
                 </Pressable>
               )}
             </View>
@@ -545,14 +685,24 @@ export default function Perfil() {
                 INFORMAÇÕES PESSOAIS
             ======================================== */}
 
-            <TituloSecao titulo="Informações Pessoais" icone="person-circle" />
+            <TituloSecao
+              titulo="Informações Pessoais"
+              icone="person-circle"
+            />
 
-            <View style={[styles.row, mobile && styles.rowMobile]}>
+            <View
+              style={[
+                styles.row,
+                mobile && styles.rowMobile,
+              ]}
+            >
               <View style={styles.column}>
                 <CampoPerfil
                   titulo="Nome Completo *"
                   valor={perfil.nome}
-                  onChange={(valor) => atualizarCampo("nome", valor)}
+                  onChange={(valor) =>
+                    atualizarCampo("nome", valor)
+                  }
                   placeholder="Informe seu nome completo"
                   editando={editando}
                 />
@@ -562,19 +712,28 @@ export default function Perfil() {
                 <CampoPerfil
                   titulo="Data de Nascimento"
                   valor={perfil.nascimento}
-                  onChange={(valor) => atualizarCampo("nascimento", valor)}
+                  onChange={(valor) =>
+                    atualizarCampo("nascimento", valor)
+                  }
                   placeholder="DD/MM/AAAA"
                   editando={editando}
                 />
               </View>
             </View>
 
-            <View style={[styles.row, mobile && styles.rowMobile]}>
+            <View
+              style={[
+                styles.row,
+                mobile && styles.rowMobile,
+              ]}
+            >
               <View style={styles.column}>
                 <CampoPerfil
                   titulo="E-mail *"
                   valor={perfil.email}
-                  onChange={(valor) => atualizarCampo("email", valor)}
+                  onChange={(valor) =>
+                    atualizarCampo("email", valor)
+                  }
                   placeholder="seuemail@exemplo.com"
                   editando={editando}
                   tipo="email-address"
@@ -585,7 +744,9 @@ export default function Perfil() {
                 <CampoPerfil
                   titulo="Telefone"
                   valor={perfil.telefone}
-                  onChange={(valor) => atualizarCampo("telefone", valor)}
+                  onChange={(valor) =>
+                    atualizarCampo("telefone", valor)
+                  }
                   placeholder="(16) 99999-9999"
                   editando={editando}
                   tipo="phone-pad"
@@ -597,14 +758,24 @@ export default function Perfil() {
                 LOCALIZAÇÃO
             ======================================== */}
 
-            <TituloSecao titulo="Minha Localização" icone="location" />
+            <TituloSecao
+              titulo="Minha Localização"
+              icone="location"
+            />
 
-            <View style={[styles.row, mobile && styles.rowMobile]}>
+            <View
+              style={[
+                styles.row,
+                mobile && styles.rowMobile,
+              ]}
+            >
               <View style={styles.column}>
                 <CampoPerfil
                   titulo="Cidade"
                   valor={perfil.cidade}
-                  onChange={(valor) => atualizarCampo("cidade", valor)}
+                  onChange={(valor) =>
+                    atualizarCampo("cidade", valor)
+                  }
                   placeholder="Ex: Taquaritinga"
                   editando={editando}
                 />
@@ -614,7 +785,9 @@ export default function Perfil() {
                 <CampoPerfil
                   titulo="Bairro"
                   valor={perfil.bairro}
-                  onChange={(valor) => atualizarCampo("bairro", valor)}
+                  onChange={(valor) =>
+                    atualizarCampo("bairro", valor)
+                  }
                   placeholder="Informe seu bairro"
                   editando={editando}
                 />
@@ -625,12 +798,17 @@ export default function Perfil() {
                 SOBRE MIM
             ======================================== */}
 
-            <TituloSecao titulo="Sobre Mim" icone="document-text" />
+            <TituloSecao
+              titulo="Sobre Mim"
+              icone="document-text"
+            />
 
             <CampoPerfil
               titulo="Biografia"
               valor={perfil.biografia}
-              onChange={(valor) => atualizarCampo("biografia", valor)}
+              onChange={(valor) =>
+                atualizarCampo("biografia", valor)
+              }
               placeholder="Conte um pouco sobre você, seus interesses e os tipos de rolê que mais gosta..."
               editando={editando}
               multiline
@@ -640,9 +818,15 @@ export default function Perfil() {
                 PREFERÊNCIAS
             ======================================== */}
 
-            <TituloSecao titulo="Minhas Preferências" icone="settings" />
+            <TituloSecao
+              titulo="Minhas Preferências"
+              icone="settings"
+            />
 
             <View style={styles.preferencesArea}>
+
+              {/* NOTIFICAÇÕES */}
+
               <View style={styles.preferenceRow}>
                 <View style={styles.preferenceInfo}>
                   <Text style={styles.preferenceTitle}>
@@ -650,7 +834,8 @@ export default function Perfil() {
                   </Text>
 
                   <Text style={styles.preferenceDescription}>
-                    Preferência para receber avisos sobre eventos e atividades.
+                    Preferência para receber avisos
+                    sobre eventos e atividades.
                   </Text>
                 </View>
 
@@ -664,9 +849,15 @@ export default function Perfil() {
                     false: "#d0d4d9",
                     true: "#8fb9db",
                   }}
-                  thumbColor={perfil.notificacoes ? AZUL : "#ffffff"}
+                  thumbColor={
+                    perfil.notificacoes
+                      ? AZUL
+                      : "#ffffff"
+                  }
                 />
               </View>
+
+              {/* NOVIDADES */}
 
               <View style={styles.preferenceRow}>
                 <View style={styles.preferenceInfo}>
@@ -675,38 +866,55 @@ export default function Perfil() {
                   </Text>
 
                   <Text style={styles.preferenceDescription}>
-                    Preferência para receber novidades da Rota do Rolê.
+                    Preferência para receber novidades
+                    da Rota do Rolê.
                   </Text>
                 </View>
 
                 <Switch
                   value={perfil.novidades}
-                  onValueChange={(valor) => atualizarCampo("novidades", valor)}
+                  onValueChange={(valor) =>
+                    atualizarCampo("novidades", valor)
+                  }
                   disabled={!editando}
                   trackColor={{
                     false: "#d0d4d9",
                     true: "#8fb9db",
                   }}
-                  thumbColor={perfil.novidades ? AZUL : "#ffffff"}
+                  thumbColor={
+                    perfil.novidades
+                      ? AZUL
+                      : "#ffffff"
+                  }
                 />
               </View>
+
             </View>
 
             {/* ========================================
                 SEGURANÇA
             ======================================== */}
 
-            <TituloSecao titulo="Segurança da Conta" icone="shield-checkmark" />
+            <TituloSecao
+              titulo="Segurança da Conta"
+              icone="shield-checkmark"
+            />
 
             <View style={styles.securityArea}>
-              <Ionicons name="lock-closed-outline" size={25} color={AZUL} />
+              <Ionicons
+                name="lock-closed-outline"
+                size={25}
+                color={AZUL}
+              />
 
               <View style={styles.securityInfo}>
-                <Text style={styles.securityTitle}>Senha de Acesso</Text>
+                <Text style={styles.securityTitle}>
+                  Senha de Acesso
+                </Text>
 
                 <Text style={styles.securityDescription}>
-                  A troca de senha deverá ser conectada ao sistema de
-                  autenticação do aplicativo.
+                  A troca de senha deverá ser conectada
+                  ao sistema de autenticação do aplicativo.
                 </Text>
               </View>
             </View>
@@ -716,7 +924,12 @@ export default function Perfil() {
             ======================================== */}
 
             {editando && (
-              <View style={[styles.buttonsRow, mobile && styles.buttonsMobile]}>
+              <View
+                style={[
+                  styles.buttonsRow,
+                  mobile && styles.buttonsMobile,
+                ]}
+              >
                 <Pressable
                   style={({ pressed }) => [
                     styles.saveButton,
@@ -724,25 +937,43 @@ export default function Perfil() {
                   ]}
                   onPress={salvarPerfil}
                 >
-                  <Ionicons name="checkmark" size={20} color="#ffffff" />
+                  <Ionicons
+                    name="checkmark"
+                    size={20}
+                    color="#ffffff"
+                  />
 
-                  <Text style={styles.saveButtonText}>Salvar Alterações</Text>
+                  <Text style={styles.saveButtonText}>
+                    Salvar Alterações
+                  </Text>
                 </Pressable>
 
-                <Pressable style={styles.cancelButton} onPress={cancelarEdicao}>
-                  <Ionicons name="close" size={20} color={LARANJA} />
+                <Pressable
+                  style={styles.cancelButton}
+                  onPress={cancelarEdicao}
+                >
+                  <Ionicons
+                    name="close"
+                    size={20}
+                    color={LARANJA}
+                  />
 
-                  <Text style={styles.cancelButtonText}>Cancelar</Text>
+                  <Text style={styles.cancelButtonText}>
+                    Cancelar
+                  </Text>
                 </Pressable>
               </View>
             )}
+
           </View>
 
           {/* RODAPÉ */}
 
           <Text style={styles.footerText}>
-            Rota do Rolê — Sua cidade, seus eventos, sua experiência.
+            Rota do Rolê — Sua cidade, seus eventos,
+            sua experiência.
           </Text>
+
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -754,6 +985,7 @@ export default function Perfil() {
 // =====================================================
 
 const styles = StyleSheet.create({
+
   // ESTRUTURA
 
   safeArea: {
@@ -804,7 +1036,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
+  // =====================================================
   // MENU HAMBÚRGUER
+  // =====================================================
 
   menu: {
     backgroundColor: "#ffffff",
@@ -824,14 +1058,25 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eeeeee",
   },
 
+  // ITEM SELECIONADO EM LARANJA
+
   itemMenuAtivo: {
-    backgroundColor: "#eef5fb",
+    backgroundColor: "#fff4ef",
   },
 
   textoMenu: {
     color: "#173b5e",
     fontSize: 15,
     fontWeight: "600",
+    marginLeft: 12,
+  },
+
+  // TEXTO SELECIONADO EM LARANJA
+
+  textoMenuAtivo: {
+    color: LARANJA,
+    fontSize: 15,
+    fontWeight: "bold",
     marginLeft: 12,
   },
 
@@ -1224,4 +1469,5 @@ const styles = StyleSheet.create({
     marginTop: 28,
     paddingHorizontal: 20,
   },
+
 });

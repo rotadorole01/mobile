@@ -1,9 +1,8 @@
-import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 
+import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-
 import {
   Image,
   Pressable,
@@ -14,7 +13,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // =====================================================
@@ -97,7 +95,6 @@ const eventos = [
 export default function Eventos() {
   const router = useRouter();
   const { width } = useWindowDimensions();
-
   const telaPequena = width < 700;
 
   // ===================================================
@@ -111,7 +108,7 @@ export default function Eventos() {
   }
 
   // ===================================================
-  // NAVEGAÇÃO CORRIGIDA
+  // NAVEGAÇÃO
   // ===================================================
 
   function irParaInicio() {
@@ -132,6 +129,24 @@ export default function Eventos() {
   function irParaMinhaConta() {
     setMenuAberto(false);
     router.navigate("/perfil");
+  }
+
+  // ===================================================
+  // SOBRE NÓS - NOVO
+  // ===================================================
+
+  function irParaSobreNos() {
+    setMenuAberto(false);
+    router.navigate("/sobrenos");
+  }
+
+  // ===================================================
+  // QUIZ DO ROLÊ - NOVO
+  // ===================================================
+
+  function irParaQuiz() {
+    setMenuAberto(false);
+    router.navigate("/quiz");
   }
 
   // ===================================================
@@ -169,6 +184,7 @@ export default function Eventos() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+
         {/* ==========================================
             CABEÇALHO
         ========================================== */}
@@ -181,10 +197,19 @@ export default function Eventos() {
         >
           {/* LOGO */}
 
-          <Pressable style={styles.logoArea} onPress={irParaInicio}>
-            <FontAwesome name="map-marker" size={30} color="#ffffff" />
+          <Pressable
+            style={styles.logoArea}
+            onPress={irParaInicio}
+          >
+            <FontAwesome
+              name="map-marker"
+              size={30}
+              color="#ffffff"
+            />
 
-            <Text style={styles.logo}>Rota do Rolê</Text>
+            <Text style={styles.logo}>
+              Rota do Rolê
+            </Text>
           </Pressable>
 
           {/* BOTÃO HAMBÚRGUER */}
@@ -209,40 +234,116 @@ export default function Eventos() {
 
         {menuAberto && (
           <View style={styles.menu}>
+
             {/* INÍCIO */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaInicio}>
-              <Ionicons name="home-outline" size={20} color="#075b91" />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaInicio}
+            >
+              <Ionicons
+                name="home-outline"
+                size={20}
+                color="#075b91"
+              />
 
-              <Text style={styles.textoMenu}>Início</Text>
+              <Text style={styles.textoMenu}>
+                Início
+              </Text>
             </Pressable>
 
             {/* EVENTOS */}
 
             <Pressable
-              style={[styles.itemMenu, styles.itemMenuAtivo]}
+              style={[
+                styles.itemMenu,
+                styles.itemMenuAtivo,
+              ]}
               onPress={irParaEventos}
             >
-              <Ionicons name="calendar-outline" size={20} color="#075b91" />
+              <Ionicons
+                name="calendar-outline"
+                size={20}
+                color="#075b91"
+              />
 
-              <Text style={styles.textoMenu}>Eventos</Text>
+              <Text style={styles.textoMenu}>
+                Eventos
+              </Text>
             </Pressable>
 
             {/* CADASTRAR EVENTO */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaCadastrarEvento}>
-              <Ionicons name="add-circle-outline" size={20} color="#075b91" />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaCadastrarEvento}
+            >
+              <Ionicons
+                name="add-circle-outline"
+                size={20}
+                color="#075b91"
+              />
 
-              <Text style={styles.textoMenu}>Cadastrar Evento</Text>
+              <Text style={styles.textoMenu}>
+                Cadastrar Evento
+              </Text>
             </Pressable>
 
             {/* MINHA CONTA */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaMinhaConta}>
-              <Ionicons name="person-outline" size={20} color="#075b91" />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaMinhaConta}
+            >
+              <Ionicons
+                name="person-outline"
+                size={20}
+                color="#075b91"
+              />
 
-              <Text style={styles.textoMenu}>Minha Conta</Text>
+              <Text style={styles.textoMenu}>
+                Minha Conta
+              </Text>
             </Pressable>
+
+            {/* ========================================
+                SOBRE NÓS - NOVO
+            ======================================== */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaSobreNos}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color="#075b91"
+              />
+
+              <Text style={styles.textoMenu}>
+                Sobre Nós
+              </Text>
+            </Pressable>
+
+            {/* ========================================
+                QUIZ DO ROLÊ - NOVO
+            ======================================== */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaQuiz}
+            >
+              <Ionicons
+                name="help-circle-outline"
+                size={20}
+                color="#075b91"
+              />
+
+              <Text style={styles.textoMenu}>
+                Quiz do Rolê
+              </Text>
+            </Pressable>
+
           </View>
         )}
 
@@ -256,12 +357,21 @@ export default function Eventos() {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
+
           {/* TÍTULO */}
 
           <View
-            style={[styles.titleArea, telaPequena && styles.titleAreaMobile]}
+            style={[
+              styles.titleArea,
+              telaPequena && styles.titleAreaMobile,
+            ]}
           >
-            <Text style={[styles.titulo, telaPequena && styles.tituloMobile]}>
+            <Text
+              style={[
+                styles.titulo,
+                telaPequena && styles.tituloMobile,
+              ]}
+            >
               Todos os Eventos
             </Text>
 
@@ -273,7 +383,10 @@ export default function Eventos() {
           ======================================== */}
 
           <View
-            style={[styles.searchArea, telaPequena && styles.searchAreaMobile]}
+            style={[
+              styles.searchArea,
+              telaPequena && styles.searchAreaMobile,
+            ]}
           >
             <TextInput
               style={styles.searchInput}
@@ -285,8 +398,13 @@ export default function Eventos() {
               returnKeyType="search"
             />
 
-            <Pressable style={styles.searchButton} onPress={pesquisarEventos}>
-              <Text style={styles.searchButtonText}>Buscar</Text>
+            <Pressable
+              style={styles.searchButton}
+              onPress={pesquisarEventos}
+            >
+              <Text style={styles.searchButtonText}>
+                Buscar
+              </Text>
             </Pressable>
           </View>
 
@@ -295,7 +413,10 @@ export default function Eventos() {
           ======================================== */}
 
           <View
-            style={[styles.eventsGrid, telaPequena && styles.eventsGridMobile]}
+            style={[
+              styles.eventsGrid,
+              telaPequena && styles.eventsGridMobile,
+            ]}
           >
             {eventosFiltrados.map((evento) => (
               <View
@@ -305,6 +426,7 @@ export default function Eventos() {
                   telaPequena && styles.eventCardMobile,
                 ]}
               >
+
                 {/* IMAGEM */}
 
                 <View
@@ -336,37 +458,62 @@ export default function Eventos() {
                     telaPequena && styles.cardContentMobile,
                   ]}
                 >
-                  <Text style={styles.eventTitle}>{evento.titulo}</Text>
+                  <Text style={styles.eventTitle}>
+                    {evento.titulo}
+                  </Text>
 
                   {/* DATA E HORÁRIO */}
 
                   <View style={styles.infoRow}>
-                    <Feather name="calendar" size={16} color="#68788c" />
+                    <Feather
+                      name="calendar"
+                      size={16}
+                      color="#68788c"
+                    />
 
-                    <Text style={styles.infoText}>{evento.data}</Text>
+                    <Text style={styles.infoText}>
+                      {evento.data}
+                    </Text>
 
-                    <Feather name="clock" size={16} color="#68788c" />
+                    <Feather
+                      name="clock"
+                      size={16}
+                      color="#68788c"
+                    />
 
-                    <Text style={styles.infoText}>{evento.horario}</Text>
+                    <Text style={styles.infoText}>
+                      {evento.horario}
+                    </Text>
                   </View>
 
                   {/* LOCAL */}
 
                   <View style={styles.infoRow}>
-                    <Feather name="map-pin" size={16} color="#68788c" />
+                    <Feather
+                      name="map-pin"
+                      size={16}
+                      color="#68788c"
+                    />
 
-                    <Text style={styles.infoText}>{evento.local}</Text>
+                    <Text style={styles.infoText}>
+                      {evento.local}
+                    </Text>
                   </View>
 
                   {/* DESCRIÇÃO */}
 
-                  <Text style={styles.description}>{evento.descricao}</Text>
+                  <Text style={styles.description}>
+                    {evento.descricao}
+                  </Text>
 
                   {/* BOTÃO INSCREVER-SE */}
 
                   <Pressable style={styles.subscribeButton}>
-                    <Text style={styles.subscribeText}>Inscrever-se</Text>
+                    <Text style={styles.subscribeText}>
+                      Inscrever-se
+                    </Text>
                   </Pressable>
+
                 </View>
               </View>
             ))}
@@ -375,15 +522,23 @@ export default function Eventos() {
 
             {eventosFiltrados.length === 0 && (
               <View style={styles.emptyArea}>
-                <Ionicons name="search-outline" size={36} color="#68788c" />
+                <Ionicons
+                  name="search-outline"
+                  size={36}
+                  color="#68788c"
+                />
 
-                <Text style={styles.emptyTitle}>Nenhum evento encontrado</Text>
+                <Text style={styles.emptyTitle}>
+                  Nenhum evento encontrado
+                </Text>
 
                 <Text style={styles.emptyText}>
-                  Tente pesquisar por outro nome, categoria ou local.
+                  Tente pesquisar por outro nome,
+                  categoria ou local.
                 </Text>
               </View>
             )}
+
           </View>
         </ScrollView>
       </View>
@@ -396,6 +551,7 @@ export default function Eventos() {
 // =====================================================
 
 const styles = StyleSheet.create({
+
   // ===================================================
   // ESTRUTURA
   // ===================================================
