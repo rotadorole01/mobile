@@ -58,27 +58,15 @@ export default function DashBoard() {
     route.navigate("/perfil");
   }
 
-  // ===================================================
-  // SOBRE NÓS
-  // ===================================================
-
   function irParaSobreNos() {
     setMenuAberto(false);
     route.navigate("/sobrenos");
   }
 
-  // ===================================================
-  // QUIZ DO ROLÊ - NOVA NAVEGAÇÃO
-  // ===================================================
-
   function irParaQuiz() {
     setMenuAberto(false);
     route.navigate("/quiz");
   }
-
-  // ===================================================
-  // PATROCINADOR
-  // ===================================================
 
   function irParaPatrocinador() {
     setMenuAberto(false);
@@ -150,19 +138,27 @@ export default function DashBoard() {
         {menuAberto && (
           <View style={styles.menu}>
 
-            {/* INÍCIO */}
+            {/* INÍCIO - SELECIONADO EM LARANJA */}
 
             <Pressable
-              style={styles.itemMenu}
+              style={[
+                styles.itemMenu,
+                styles.itemMenuAtivo,
+              ]}
               onPress={irParaInicio}
             >
               <Ionicons
                 name="home-outline"
                 size={20}
-                color="#075b91"
+                color="#ff6633"
               />
 
-              <Text style={styles.textoMenu}>
+              <Text
+                style={[
+                  styles.textoMenu,
+                  styles.textoMenuAtivo,
+                ]}
+              >
                 Início
               </Text>
             </Pressable>
@@ -235,9 +231,7 @@ export default function DashBoard() {
               </Text>
             </Pressable>
 
-            {/* ==========================================
-                QUIZ DO ROLÊ - NOVO TÓPICO
-            ========================================== */}
+            {/* QUIZ DO ROLÊ */}
 
             <Pressable
               style={styles.itemMenu}
@@ -555,11 +549,25 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eeeeee",
   },
 
+  // NOVO: DESTAQUE LARANJA NO ITEM SELECIONADO
+
+  itemMenuAtivo: {
+    backgroundColor: "#fff0e8",
+    borderLeftWidth: 4,
+    borderLeftColor: "#ff6633",
+    paddingLeft: 21,
+  },
+
   textoMenu: {
     color: "#173b5e",
     fontSize: 15,
     fontWeight: "600",
     marginLeft: 12,
+  },
+
+  textoMenuAtivo: {
+    color: "#ff6633",
+    fontWeight: "800",
   },
 
   textoSair: {
@@ -770,8 +778,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
-  // MUDA PARA LARANJA NO HOVER OU CLIQUE
 
   botaoParceiroAtivo: {
     backgroundColor: "#ff6633",

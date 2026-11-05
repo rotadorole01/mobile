@@ -97,11 +97,13 @@ export default function Eventos() {
   const { width } = useWindowDimensions();
   const telaPequena = width < 700;
 
+  const [menuAberto, setMenuAberto] = useState(false);
+  const [busca, setBusca] = useState("");
+  const [buscaAplicada, setBuscaAplicada] = useState("");
+
   // ===================================================
   // MENU HAMBÚRGUER
   // ===================================================
-
-  const [menuAberto, setMenuAberto] = useState(false);
 
   function abrirMenu() {
     setMenuAberto((anterior) => !anterior);
@@ -118,7 +120,6 @@ export default function Eventos() {
 
   function irParaEventos() {
     setMenuAberto(false);
-    // Já estamos na página Eventos.
   }
 
   function irParaCadastrarEvento() {
@@ -131,30 +132,25 @@ export default function Eventos() {
     router.navigate("/perfil");
   }
 
-  // ===================================================
-  // SOBRE NÓS - NOVO
-  // ===================================================
-
   function irParaSobreNos() {
     setMenuAberto(false);
     router.navigate("/sobrenos");
   }
-
-  // ===================================================
-  // QUIZ DO ROLÊ - NOVO
-  // ===================================================
 
   function irParaQuiz() {
     setMenuAberto(false);
     router.navigate("/quiz");
   }
 
+  // NOVO: BOTÃO SAIR
+  function irParaLogin() {
+    setMenuAberto(false);
+    router.replace("/login");
+  }
+
   // ===================================================
   // PESQUISA DE EVENTOS
   // ===================================================
-
-  const [busca, setBusca] = useState("");
-  const [buscaAplicada, setBuscaAplicada] = useState("");
 
   const eventosFiltrados = useMemo(() => {
     const texto = buscaAplicada.trim().toLowerCase();
@@ -185,9 +181,7 @@ export default function Eventos() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
 
-        {/* ==========================================
-            CABEÇALHO
-        ========================================== */}
+        {/* CABEÇALHO */}
 
         <LinearGradient
           colors={["#075b91", "#6b5a64", "#ff6633"]}
@@ -195,8 +189,6 @@ export default function Eventos() {
           end={{ x: 1, y: 0.5 }}
           style={styles.header}
         >
-          {/* LOGO */}
-
           <Pressable
             style={styles.logoArea}
             onPress={irParaInicio}
@@ -211,8 +203,6 @@ export default function Eventos() {
               Rota do Rolê
             </Text>
           </Pressable>
-
-          {/* BOTÃO HAMBÚRGUER */}
 
           <Pressable
             style={styles.botaoMenu}
@@ -252,7 +242,7 @@ export default function Eventos() {
               </Text>
             </Pressable>
 
-            {/* EVENTOS */}
+            {/* EVENTOS - DESTACADO EM LARANJA */}
 
             <Pressable
               style={[
@@ -264,10 +254,15 @@ export default function Eventos() {
               <Ionicons
                 name="calendar-outline"
                 size={20}
-                color="#075b91"
+                color="#ff5733"
               />
 
-              <Text style={styles.textoMenu}>
+              <Text
+                style={[
+                  styles.textoMenu,
+                  styles.textoMenuAtivo,
+                ]}
+              >
                 Eventos
               </Text>
             </Pressable>
@@ -306,9 +301,7 @@ export default function Eventos() {
               </Text>
             </Pressable>
 
-            {/* ========================================
-                SOBRE NÓS - NOVO
-            ======================================== */}
+            {/* SOBRE NÓS */}
 
             <Pressable
               style={styles.itemMenu}
@@ -325,9 +318,7 @@ export default function Eventos() {
               </Text>
             </Pressable>
 
-            {/* ========================================
-                QUIZ DO ROLÊ - NOVO
-            ======================================== */}
+            {/* QUIZ DO ROLÊ */}
 
             <Pressable
               style={styles.itemMenu}
@@ -341,6 +332,23 @@ export default function Eventos() {
 
               <Text style={styles.textoMenu}>
                 Quiz do Rolê
+              </Text>
+            </Pressable>
+
+            {/* NOVO: SAIR */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaLogin}
+            >
+              <Ionicons
+                name="log-out-outline"
+                size={20}
+                color="#075b91"
+              />
+
+              <Text style={styles.textoMenu}>
+                Sair
               </Text>
             </Pressable>
 
@@ -378,9 +386,7 @@ export default function Eventos() {
             <View style={styles.titleLine} />
           </View>
 
-          {/* ========================================
-              BUSCA
-          ======================================== */}
+          {/* BUSCA */}
 
           <View
             style={[
@@ -552,9 +558,7 @@ export default function Eventos() {
 
 const styles = StyleSheet.create({
 
-  // ===================================================
   // ESTRUTURA
-  // ===================================================
 
   safeArea: {
     flex: 1,
@@ -574,9 +578,7 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
   },
 
-  // ===================================================
   // CABEÇALHO
-  // ===================================================
 
   header: {
     height: 75,
@@ -606,9 +608,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  // ===================================================
   // MENU HAMBÚRGUER
-  // ===================================================
 
   menu: {
     backgroundColor: "#ffffff",
@@ -628,8 +628,13 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eeeeee",
   },
 
+  // NOVO: EVENTOS SELECIONADO EM LARANJA
+
   itemMenuAtivo: {
-    backgroundColor: "#eef5fb",
+    backgroundColor: "#fff0e8",
+    borderLeftWidth: 4,
+    borderLeftColor: "#ff5733",
+    paddingLeft: 21,
   },
 
   textoMenu: {
@@ -639,9 +644,12 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
 
-  // ===================================================
+  textoMenuAtivo: {
+    color: "#ff5733",
+    fontWeight: "800",
+  },
+
   // TÍTULO
-  // ===================================================
 
   titleArea: {
     alignItems: "center",
@@ -673,9 +681,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
 
-  // ===================================================
   // BUSCA
-  // ===================================================
 
   searchArea: {
     width: "70%",
@@ -719,9 +725,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
 
-  // ===================================================
   // GRID DE EVENTOS
-  // ===================================================
 
   eventsGrid: {
     width: "70%",
@@ -743,9 +747,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
 
-  // ===================================================
   // CARD
-  // ===================================================
 
   eventCard: {
     width: 390,
@@ -769,9 +771,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
 
-  // ===================================================
   // IMAGEM
-  // ===================================================
 
   imageArea: {
     height: 200,
@@ -787,9 +787,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-  // ===================================================
   // CATEGORIA
-  // ===================================================
 
   categoryBadge: {
     position: "absolute",
@@ -807,9 +805,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
-  // ===================================================
   // CONTEÚDO DO CARD
-  // ===================================================
 
   cardContent: {
     padding: 20,
@@ -848,9 +844,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
 
-  // ===================================================
   // BOTÃO INSCREVER-SE
-  // ===================================================
 
   subscribeButton: {
     width: 110,
@@ -867,9 +861,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
 
-  // ===================================================
   // BUSCA SEM RESULTADOS
-  // ===================================================
 
   emptyArea: {
     width: "100%",

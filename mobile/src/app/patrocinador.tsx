@@ -1,3 +1,4 @@
+
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -72,8 +73,16 @@ function CampoSelecao({
 
   return (
     <View style={styles.selectContainer}>
-      <Pressable style={styles.select} onPress={() => setAberto(!aberto)}>
-        <Text style={[styles.selectText, !valor && styles.placeholderText]}>
+      <Pressable
+        style={styles.select}
+        onPress={() => setAberto(!aberto)}
+      >
+        <Text
+          style={[
+            styles.selectText,
+            !valor && styles.placeholderText,
+          ]}
+        >
           {valor || placeholder}
         </Text>
 
@@ -95,7 +104,9 @@ function CampoSelecao({
                 setAberto(false);
               }}
             >
-              <Text style={styles.optionText}>{opcao}</Text>
+              <Text style={styles.optionText}>
+                {opcao}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -119,7 +130,7 @@ function formatarCNPJ(valor: string) {
 }
 
 // =====================================================
-// VALIDAR DÍGITOS VERIFICADORES DO CNPJ
+// VALIDAR CNPJ
 // =====================================================
 
 function validarCNPJ(valor: string) {
@@ -135,7 +146,8 @@ function validarCNPJ(valor: string) {
 
   function calcularDigito(base: string, pesos: number[]) {
     const soma = pesos.reduce(
-      (total, peso, indice) => total + Number(base[indice]) * peso,
+      (total, peso, indice) =>
+        total + Number(base[indice]) * peso,
       0
     );
 
@@ -144,15 +156,20 @@ function validarCNPJ(valor: string) {
     return resto < 2 ? 0 : 11 - resto;
   }
 
-  const primeiro = calcularDigito(numeros.slice(0, 12), [
-    5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2,
-  ]);
+  const primeiro = calcularDigito(
+    numeros.slice(0, 12),
+    [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+  );
 
-  const segundo = calcularDigito(numeros.slice(0, 13), [
-    6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2,
-  ]);
+  const segundo = calcularDigito(
+    numeros.slice(0, 13),
+    [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+  );
 
-  return primeiro === Number(numeros[12]) && segundo === Number(numeros[13]);
+  return (
+    primeiro === Number(numeros[12]) &&
+    segundo === Number(numeros[13])
+  );
 }
 
 // =====================================================
@@ -171,12 +188,16 @@ function formatarTelefone(valor: string) {
   }
 
   if (numeros.length <= 10) {
-    return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(
+    return `(${numeros.slice(0, 2)}) ${numeros.slice(
+      2,
       6
-    )}`;
+    )}-${numeros.slice(6)}`;
   }
 
-  return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+  return `(${numeros.slice(0, 2)}) ${numeros.slice(
+    2,
+    7
+  )}-${numeros.slice(7)}`;
 }
 
 // =====================================================
@@ -205,7 +226,8 @@ export default function Patrocinador() {
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
   const [interesse, setInteresse] = useState("");
-  const [mensagemAdicional, setMensagemAdicional] = useState("");
+  const [mensagemAdicional, setMensagemAdicional] =
+    useState("");
 
   // ===================================================
   // MENSAGENS
@@ -245,22 +267,23 @@ export default function Patrocinador() {
     router.navigate("/perfil");
   }
 
-  // ===================================================
-  // SOBRE NÓS - NOVO
-  // ===================================================
-
   function irParaSobreNos() {
     setMenuAberto(false);
     router.navigate("/sobrenos");
   }
 
-  // ===================================================
-  // QUIZ DO ROLÊ - NOVO
-  // ===================================================
-
   function irParaQuiz() {
     setMenuAberto(false);
     router.navigate("/quiz");
+  }
+
+  // ===================================================
+  // NOVO: BOTÃO SAIR
+  // ===================================================
+
+  function irParaLogin() {
+    setMenuAberto(false);
+    router.replace("/login");
   }
 
   // ===================================================
@@ -285,18 +308,27 @@ export default function Patrocinador() {
     }
 
     if (!area) {
-      mostrarMensagem("Campo obrigatório", "Selecione a área de atuação.");
+      mostrarMensagem(
+        "Campo obrigatório",
+        "Selecione a área de atuação."
+      );
       return;
     }
 
     if (!responsavel.trim()) {
-      mostrarMensagem("Campo obrigatório", "Informe o nome do responsável.");
+      mostrarMensagem(
+        "Campo obrigatório",
+        "Informe o nome do responsável."
+      );
       return;
     }
 
     const telefoneNumeros = telefone.replace(/\D/g, "");
 
-    if (telefoneNumeros.length !== 10 && telefoneNumeros.length !== 11) {
+    if (
+      telefoneNumeros.length !== 10 &&
+      telefoneNumeros.length !== 11
+    ) {
       mostrarMensagem(
         "Telefone inválido",
         "Informe um telefone com DDD válido."
@@ -322,9 +354,7 @@ export default function Patrocinador() {
       return;
     }
 
-    // =================================================
-    // DADOS PRONTOS PARA INTEGRAÇÃO
-    // =================================================
+    // DADOS PRONTOS PARA INTEGRAÇÃO COM API
 
     const dadosSolicitacao = {
       empresa: empresa.trim(),
@@ -337,9 +367,8 @@ export default function Patrocinador() {
       mensagemAdicional: mensagemAdicional.trim(),
     };
 
-    // Ainda não existe integração com banco de dados.
-    // Não registrar dados pessoais no console
-    // em ambientes de produção.
+    // Ainda não existe integração com o servidor.
+    // Os dados estão preparados para o envio futuro.
 
     mostrarMensagem(
       "Formulário validado",
@@ -354,8 +383,9 @@ export default function Patrocinador() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+
         {/* ==========================================
-            CABEÇALHO PADRÃO ROTA DO ROLÊ
+            CABEÇALHO ROTA DO ROLÊ
         ========================================== */}
 
         <LinearGradient
@@ -364,10 +394,19 @@ export default function Patrocinador() {
           end={{ x: 1, y: 0.5 }}
           style={styles.header}
         >
-          <Pressable style={styles.logoArea} onPress={irParaInicio}>
-            <FontAwesome name="map-marker" size={30} color="#ffffff" />
+          <Pressable
+            style={styles.logoArea}
+            onPress={irParaInicio}
+          >
+            <FontAwesome
+              name="map-marker"
+              size={30}
+              color="#ffffff"
+            />
 
-            <Text style={styles.logo}>Rota do Rolê</Text>
+            <Text style={styles.logo}>
+              Rota do Rolê
+            </Text>
           </Pressable>
 
           <Pressable
@@ -384,66 +423,139 @@ export default function Patrocinador() {
         </LinearGradient>
 
         {/* ==========================================
-            MENU HAMBÚRGUER
+            MENU HAMBÚRGUER ATUALIZADO
         ========================================== */}
 
         {menuAberto && (
           <View style={styles.menu}>
+
             {/* INÍCIO */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaInicio}>
-              <Ionicons name="home-outline" size={20} color={AZUL} />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaInicio}
+            >
+              <Ionicons
+                name="home-outline"
+                size={20}
+                color={AZUL}
+              />
 
-              <Text style={styles.textoMenu}>Início</Text>
+              <Text style={styles.textoMenu}>
+                Início
+              </Text>
             </Pressable>
 
-            {/* EVENTOS */}
+            {/* EVENTOS - DESTAQUE LARANJA */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaEventos}>
-              <Ionicons name="calendar-outline" size={20} color={AZUL} />
+            <Pressable
+              style={[
+                styles.itemMenu,
+                styles.itemMenuAtivo,
+              ]}
+              onPress={irParaEventos}
+            >
+              <Ionicons
+                name="calendar-outline"
+                size={20}
+                color={LARANJA}
+              />
 
-              <Text style={styles.textoMenu}>Eventos</Text>
+              <Text
+                style={[
+                  styles.textoMenu,
+                  styles.textoMenuAtivo,
+                ]}
+              >
+                Eventos
+              </Text>
             </Pressable>
 
             {/* CADASTRAR EVENTO */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaCadastro}>
-              <Ionicons name="add-circle-outline" size={20} color={AZUL} />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaCadastro}
+            >
+              <Ionicons
+                name="add-circle-outline"
+                size={20}
+                color={AZUL}
+              />
 
-              <Text style={styles.textoMenu}>Cadastrar Evento</Text>
+              <Text style={styles.textoMenu}>
+                Cadastrar Evento
+              </Text>
             </Pressable>
 
             {/* MINHA CONTA */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaMinhaConta}>
-              <Ionicons name="person-outline" size={20} color={AZUL} />
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaMinhaConta}
+            >
+              <Ionicons
+                name="person-outline"
+                size={20}
+                color={AZUL}
+              />
 
-              <Text style={styles.textoMenu}>Minha Conta</Text>
+              <Text style={styles.textoMenu}>
+                Minha Conta
+              </Text>
             </Pressable>
 
             {/* SOBRE NÓS */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaSobreNos}>
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaSobreNos}
+            >
               <Ionicons
                 name="information-circle-outline"
                 size={20}
                 color={AZUL}
               />
 
-              <Text style={styles.textoMenu}>Sobre Nós</Text>
+              <Text style={styles.textoMenu}>
+                Sobre Nós
+              </Text>
             </Pressable>
 
             {/* QUIZ DO ROLÊ */}
 
-            <Pressable style={styles.itemMenu} onPress={irParaQuiz}>
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaQuiz}
+            >
               <Ionicons
                 name="help-circle-outline"
                 size={20}
                 color={AZUL}
               />
 
-              <Text style={styles.textoMenu}>Quiz do Rolê</Text>
+              <Text style={styles.textoMenu}>
+                Quiz do Rolê
+              </Text>
             </Pressable>
+
+            {/* NOVO: SAIR */}
+
+            <Pressable
+              style={styles.itemMenu}
+              onPress={irParaLogin}
+            >
+              <Ionicons
+                name="log-out-outline"
+                size={20}
+                color={AZUL}
+              />
+
+              <Text style={styles.textoMenu}>
+                Sair
+              </Text>
+            </Pressable>
+
           </View>
         )}
 
@@ -457,25 +569,30 @@ export default function Patrocinador() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* ========================================
-              BANNER COM GRADIENTE
-          ======================================== */}
+
+          {/* BANNER */}
 
           <LinearGradient
             colors={["#4d5a79", "#806064", "#c86749"]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
-            style={[styles.banner, mobile && styles.bannerMobile]}
+            style={[
+              styles.banner,
+              mobile && styles.bannerMobile,
+            ]}
           >
             <Text
-              style={[styles.bannerTitle, mobile && styles.bannerTitleMobile]}
+              style={[
+                styles.bannerTitle,
+                mobile && styles.bannerTitleMobile,
+              ]}
             >
               Conecte sua marca à Rota do Rolê!
             </Text>
 
             <Text style={styles.bannerDescription}>
-              Destaque o seu negócio para milhares de pessoas que buscam
-              diversão, cultura e gastronomia na cidade.
+              Destaque o seu negócio para milhares de pessoas que
+              buscam diversão, cultura e gastronomia na cidade.
             </Text>
           </LinearGradient>
 
@@ -483,12 +600,21 @@ export default function Patrocinador() {
               FORMULÁRIO
           ======================================== */}
 
-          <View style={[styles.formCard, mobile && styles.formCardMobile]}>
-            {/* TÍTULO DO FORMULÁRIO */}
+          <View
+            style={[
+              styles.formCard,
+              mobile && styles.formCardMobile,
+            ]}
+          >
+
+            {/* TÍTULO */}
 
             <View style={styles.titleArea}>
               <Text
-                style={[styles.formTitle, mobile && styles.formTitleMobile]}
+                style={[
+                  styles.formTitle,
+                  mobile && styles.formTitleMobile,
+                ]}
               >
                 Solicitar Contato Comercial
               </Text>
@@ -496,9 +622,11 @@ export default function Patrocinador() {
               <View style={styles.titleLine} />
             </View>
 
-            {/* NOME DA EMPRESA */}
+            {/* EMPRESA */}
 
-            <Text style={styles.label}>Nome da Empresa / Negócio *</Text>
+            <Text style={styles.label}>
+              Nome da Empresa / Negócio *
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -511,9 +639,16 @@ export default function Patrocinador() {
 
             {/* CNPJ E ÁREA */}
 
-            <View style={[styles.row, mobile && styles.rowMobile]}>
+            <View
+              style={[
+                styles.row,
+                mobile && styles.rowMobile,
+              ]}
+            >
               <View style={styles.column}>
-                <Text style={styles.label}>CNPJ</Text>
+                <Text style={styles.label}>
+                  CNPJ
+                </Text>
 
                 <TextInput
                   style={styles.input}
@@ -522,12 +657,16 @@ export default function Patrocinador() {
                   keyboardType="numeric"
                   maxLength={18}
                   value={cnpj}
-                  onChangeText={(valor) => setCnpj(formatarCNPJ(valor))}
+                  onChangeText={(valor) =>
+                    setCnpj(formatarCNPJ(valor))
+                  }
                 />
               </View>
 
               <View style={styles.column}>
-                <Text style={styles.label}>Área de Atuação *</Text>
+                <Text style={styles.label}>
+                  Área de Atuação *
+                </Text>
 
                 <CampoSelecao
                   valor={area}
@@ -540,9 +679,16 @@ export default function Patrocinador() {
 
             {/* RESPONSÁVEL E TELEFONE */}
 
-            <View style={[styles.row, mobile && styles.rowMobile]}>
+            <View
+              style={[
+                styles.row,
+                mobile && styles.rowMobile,
+              ]}
+            >
               <View style={styles.column}>
-                <Text style={styles.label}>Nome do Responsável *</Text>
+                <Text style={styles.label}>
+                  Nome do Responsável *
+                </Text>
 
                 <TextInput
                   style={styles.input}
@@ -555,7 +701,9 @@ export default function Patrocinador() {
               </View>
 
               <View style={styles.column}>
-                <Text style={styles.label}>Telefone / WhatsApp *</Text>
+                <Text style={styles.label}>
+                  Telefone / WhatsApp *
+                </Text>
 
                 <TextInput
                   style={styles.input}
@@ -564,14 +712,18 @@ export default function Patrocinador() {
                   keyboardType="phone-pad"
                   maxLength={15}
                   value={telefone}
-                  onChangeText={(valor) => setTelefone(formatarTelefone(valor))}
+                  onChangeText={(valor) =>
+                    setTelefone(formatarTelefone(valor))
+                  }
                 />
               </View>
             </View>
 
             {/* EMAIL */}
 
-            <Text style={styles.label}>Email Corporativo *</Text>
+            <Text style={styles.label}>
+              Email Corporativo *
+            </Text>
 
             <TextInput
               style={styles.input}
@@ -584,7 +736,7 @@ export default function Patrocinador() {
               onChangeText={setEmail}
             />
 
-            {/* INTERESSE PRINCIPAL */}
+            {/* INTERESSE */}
 
             <Text style={styles.label}>
               Qual é o seu interesse principal? *
@@ -599,10 +751,15 @@ export default function Patrocinador() {
 
             {/* MENSAGEM ADICIONAL */}
 
-            <Text style={styles.label}>Mensagem Adicional (Opcional)</Text>
+            <Text style={styles.label}>
+              Mensagem Adicional (Opcional)
+            </Text>
 
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[
+                styles.input,
+                styles.textArea,
+              ]}
               placeholder="Conte um pouco sobre sua empresa e o que espera da parceria..."
               placeholderTextColor="#999999"
               value={mensagemAdicional}
@@ -621,18 +778,26 @@ export default function Patrocinador() {
               ]}
               onPress={enviarSolicitacao}
             >
-              <Ionicons name="paper-plane" size={18} color="#ffffff" />
+              <Ionicons
+                name="paper-plane"
+                size={18}
+                color="#ffffff"
+              />
 
-              <Text style={styles.submitText}>Enviar Solicitação</Text>
+              <Text style={styles.submitText}>
+                Enviar Solicitação
+              </Text>
             </Pressable>
+
           </View>
 
           {/* RODAPÉ */}
 
           <Text style={styles.footerText}>
-            Rota do Rolê — Sua marca conectada às melhores experiências da
-            cidade.
+            Rota do Rolê — Sua marca conectada às melhores
+            experiências da cidade.
           </Text>
+
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -644,6 +809,7 @@ export default function Patrocinador() {
 // =====================================================
 
 const styles = StyleSheet.create({
+
   // ESTRUTURA
 
   safeArea: {
@@ -719,6 +885,20 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     marginLeft: 12,
+  },
+
+  // NOVO: ITEM SELECIONADO LARANJA
+
+  itemMenuAtivo: {
+    backgroundColor: "#fff0e8",
+    borderLeftWidth: 4,
+    borderLeftColor: LARANJA,
+    paddingLeft: 21,
+  },
+
+  textoMenuAtivo: {
+    color: LARANJA,
+    fontWeight: "800",
   },
 
   // BANNER
